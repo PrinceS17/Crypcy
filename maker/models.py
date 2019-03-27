@@ -28,7 +28,7 @@ class RelatedNews(models.Model):
 
 class Timeslot(models.Model):
     time = models.TimeField('time slot')
-    related_news = models.ForeignKey(RelatedNews, on_delete=models.SET_NULL)
+    related_news = models.ForeignKey(RelatedNews, on_delete=models.SET_NULL, null=True)
     def __str__(self):
         return self.time
 
@@ -37,7 +37,7 @@ class CryptoCurrency(models.Model):
     logo = models.URLField()        # in doubt
     time = models.ManyToManyField(Timeslot, 
         through='Metric', 
-        through_fields=('CryptoCurrency', 'Timeslot') )
+        through_fields=('crypto_currency', 'timeslot') )
     def __str__(self):
         return self.name
     
@@ -66,7 +66,7 @@ class User(models.Model):
 class Log(models.Model):
     ip = models.IntegerField()
     time = models.DateTimeField('log-in time')
-    user = models.ForeignKey(User, on_delete=models.SET_NULL)
-    related_news = models.ForeignKey(RelatedNews, on_delete=models.SET_NULL)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    related_news = models.ForeignKey(RelatedNews, on_delete=models.SET_NULL, null=True)
     def __str__(self):
         return str(self.time) + ' ' + str(self.ip) + ' ' + str(self.user)
