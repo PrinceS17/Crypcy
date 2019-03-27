@@ -9,7 +9,7 @@ import sqlite3
     #def__init__(self,data):
         #self.__dict__=json.loads(data)
 conn=sqlite3.connect('proj.db')
-#print("open successfully!")
+#PRAGMA foreign_keys=ON;
 url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
 parameters = {
       'start': '1',
@@ -31,20 +31,29 @@ try:
       response = session.get(url, params=parameters)
       data = json.loads(response.text)
       l1=data['data']
-
       for i in range(len(l1)):
 
+            # get datas for insertion
             ID=l1[i]['id'];
-            #print(ID)
-            #print()
             NAME=l1[i]['name'];
             LOGO=l1[i]['slug'];
-            #print(l1[i])
+            slotid=l1[i]['last_updated']
+            supply=l1[i]['circulating_supply']
+            dict1=l1[i]['quote']
+            dict2=dict1['USD']
+            price=dict2['price']
+            volume=dict2['volume_24h']
+
+
             conn.execute("INSERT OR REPLACE INTO Currencies (CurrencyID,Name,Logo) VALUES(?,?,?)", (ID,NAME,LOGO))
+            conn.execute("INSERT OR REPLACE INTO Timeslot (SlotID) VALUES(?)", (slotid,))
+            conn.execute("INSERT OR REPLACE INTO Metric (CurrencyID,SlotID,Volume,Price,Circulating_Supply,Utility_Value) VALUES(?,?,?,?,?,NULL)",
+            (ID,slotid,volume,price,supply))
       conn.commit();
 
+      #the below lines are for testing
       #cursor = conn.cursor()
-      #cursor.execute("SELECT * FROM Currencies")
+      #cursor.execute("SELECT * FROM Metric")
       #print(cursor.fetchall())
       #print('successfully insert');
       conn.close();
