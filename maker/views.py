@@ -5,57 +5,21 @@ from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
 
 import json
 import sqlite3
-#import pymysql
+# import sql_operation
+
+from .sql_operation import *
 
 def index(request):
-    return HttpResponse("Hello, world. You're at the maker index.")
 
-'''
-    Load the data from the API to a dictionary and also a 
-    local cache file.
-'''
-def load_data():
-    url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
-    parameters = {
-        'start': '1',
-        'limit': '120',
-        'convert': 'USD',
-        #'sort': 'price',
-        #'sort_dir':'desc',
-        #'cryptocurrency_type':'coins'
-    }
-    headers = {
-        'Accepts': 'application/json',
-        'X-CMC_PRO_API_KEY': '441cb5ae-6618-4110-8db9-df9cba2b05ec',
-    }
-    session = Session()
-    session.headers.update(headers)
-
-    try:
-        response = session.get(url, params=parameters)
-        data = json.loads(response.text)
-        
-        # write into the cache file
-        cache = open('cache.txt', 'w')
-        cache.write(response.text)
-        cache.close()
-
-        return data['data']
+    # d = load_data()
+    d = get_data_from_cache()
+    update_news('init', 'hihi', 'http://images.firstcovers.com/covers/flash/f/final_exams-1558705.jpg?i', \
+            'Hello World!', 'Trump')
+    update_timeslot()
+    update_currency(id=1)
+    tmp = d[2]['name']
+    delete_currency(name='Bitcoin')
+    if not delete_currency(id=1):
+        print('2nd delete failed. Test passed.')
     
-    except (ConnectionError, Timeout, TooManyRedirects) as e:
-        print(e)
-        return 0
-
-
-'''
-    Insert/update the specified record into database. 
-    Maybe from online or local cache file.
-'''
-def update_record():
-    cache = open('cache.txt', 'r')
-    data_all = cache.read()
-    data = data['data']
-    for k in data:
-        print(k)
-
-    cache.close()
+    return HttpResponse("Hello, world. You're at the maker index. Bitcoin is: %s" % tmp)

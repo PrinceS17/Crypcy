@@ -1,0 +1,7 @@
+maker_relatednews(id, tag, ttype, picture, content, author)
+maker_timeslot(id, time, related_news_id)
+maker_cryptocurrency(id, name, logo)
+maker_metric(id, crypto_currency_id, timeslot_id, volume, privacy, price, supply, utility)
+maker_user(id, name, gender, password, interest_tag, score_of_knowledge)
+maker_user_favorite(id, user_id, cryptocurrency_id)
+maker_log(id, ip, time, user_id, related_news_id)

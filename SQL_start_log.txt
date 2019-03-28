@@ -1,0 +1,64 @@
+BEGIN;
+--
+-- Create model CryptoCurrency
+--
+CREATE TABLE "maker_cryptocurrency" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "name" varchar(200) NOT NULL, "logo" varchar(200) NOT NULL);
+--
+-- Create model Log
+--
+CREATE TABLE "maker_log" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "ip" integer NOT NULL, "time" datetime NOT NULL);
+--
+-- Create model Metric
+--
+CREATE TABLE "maker_metric" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "volume" integer unsigned NOT NULL, "privacy" integer unsigned NOT NULL, "price" real NOT NULL, "supply" integer unsigned NOT NULL, "utility" real NOT NULL, "crypto_currency_id" integer NOT NULL REFERENCES "maker_cryptocurrency" ("id") DEFERRABLE INITIALLY DEFERRED);
+--
+-- Create model RelatedNews
+--
+CREATE TABLE "maker_relatednews" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "tag" varchar(200) NOT NULL, "ttype" varchar(200) NOT NULL, "picture" varchar(200) NOT NULL, "content" text NOT NULL, "author" varchar(200) NOT NULL);
+--
+-- Create model Timeslot
+--
+CREATE TABLE "maker_timeslot" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "time" time NOT NULL, "related_news_id" integer NULL REFERENCES "maker_relatednews" ("id") DEFERRABLE INITIALLY DEFERRED);
+--
+-- Create model User
+--
+CREATE TABLE "maker_user" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "name" varchar(200) NOT NULL, "gender" varchar(200) NOT NULL, "password" varchar(200) NOT NULL, "interest_tag" varchar(200) NOT NULL, "score_of_knowledge" real NOT NULL);
+CREATE TABLE "maker_user_favorite" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "user_id" integer NOT NULL REFERENCES "maker_user" ("id") DEFERRABLE INITIALLY DEFERRED, "cryptocurrency_id" integer NOT NULL REFERENCES "maker_cryptocurrency" ("id") DEFERRABLE INITIALLY DEFERRED);
+--
+-- Add field timeslot to metric
+--
+ALTER TABLE "maker_metric" RENAME TO "maker_metric__old";
+CREATE TABLE "maker_metric" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "volume" integer unsigned NOT NULL, "privacy" integer unsigned NOT NULL, "price" real NOT NULL, "supply" integer unsigned NOT NULL, "utility" real NOT NULL, "crypto_currency_id" integer NOT NULL REFERENCES "maker_cryptocurrency" ("id") DEFERRABLE INITIALLY DEFERRED, "timeslot_id" integer NOT NULL REFERENCES "maker_timeslot" ("id") DEFERRABLE INITIALLY DEFERRED);
+INSERT INTO "maker_metric" ("id", "volume", "privacy", "price", "supply", "utility", "crypto_currency_id", "timeslot_id") SELECT "id", "volume", "privacy", "price", "supply", "utility", "crypto_currency_id", NULL FROM "maker_metric__old";
+DROP TABLE "maker_metric__old";
+CREATE INDEX "maker_timeslot_related_news_id_c6ef324f" ON "maker_timeslot" ("related_news_id");
+CREATE UNIQUE INDEX maker_user_favorite_user_id_cryptocurrency_id_0a50ccc8_uniq ON "maker_user_favorite" ("user_id", "cryptocurrency_id");
+CREATE INDEX "maker_user_favorite_user_id_bc5fb95f" ON "maker_user_favorite" ("user_id");
+CREATE INDEX "maker_user_favorite_cryptocurrency_id_bb1a0353" ON "maker_user_favorite" ("cryptocurrency_id");
+CREATE INDEX "maker_metric_crypto_currency_id_e4f4352c" ON "maker_metric" ("crypto_currency_id");
+CREATE INDEX "maker_metric_timeslot_id_27befdd9" ON "maker_metric" ("timeslot_id");
+--
+-- Add field related_news to log
+--
+ALTER TABLE "maker_log" RENAME TO "maker_log__old";
+CREATE TABLE "maker_log" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "ip" integer NOT NULL, "time" datetime NOT NULL, "related_news_id" integer NULL REFERENCES "maker_relatednews" ("id") DEFERRABLE INITIALLY DEFERRED);
+INSERT INTO "maker_log" ("id", "ip", "time", "related_news_id") SELECT "id", "ip", "time", NULL FROM "maker_log__old";
+DROP TABLE "maker_log__old";
+CREATE INDEX "maker_log_related_news_id_28c50a78" ON "maker_log" ("related_news_id");
+--
+-- Add field user to log
+--
+ALTER TABLE "maker_log" RENAME TO "maker_log__old";
+CREATE TABLE "maker_log" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "ip" integer NOT NULL, "time" datetime NOT NULL, "related_news_id" integer NULL REFERENCES "maker_relatednews" ("id") DEFERRABLE INITIALLY DEFERRED, "user_id" integer NULL REFERENCES "maker_user" ("id") DEFERRABLE INITIALLY DEFERRED);
+INSERT INTO "maker_log" ("id", "ip", "time", "related_news_id", "user_id") SELECT "id", "ip", "time", "related_news_id", NULL FROM "maker_log__old";
+DROP TABLE "maker_log__old";
+CREATE INDEX "maker_log_related_news_id_28c50a78" ON "maker_log" ("related_news_id");
+CREATE INDEX "maker_log_user_id_b36864ed" ON "maker_log" ("user_id");
+--
+-- Add field time to cryptocurrency
+--
+ALTER TABLE "maker_cryptocurrency" RENAME TO "maker_cryptocurrency__old";
+CREATE TABLE "maker_cryptocurrency" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "name" varchar(200) NOT NULL, "logo" varchar(200) NOT NULL);
+INSERT INTO "maker_cryptocurrency" ("id", "name", "logo") SELECT "id", "name", "logo" FROM "maker_cryptocurrency__old";
+DROP TABLE "maker_cryptocurrency__old";
+COMMIT;
