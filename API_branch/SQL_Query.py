@@ -111,4 +111,30 @@ def sort_by_utility():
 
     return retlist;
 
-def
+#complicate SQL queries
+'''select the currency that
+        - in a given time slot (e.g. 12:00 May. 1st), the price > 100
+        - and in a given period (e.g. 9:00-15:00 May.1st), average price < 50
+< meaning: observe the burst of the currency price>'''
+def select_burst_currency(timeslot, period1,period2):
+
+    SELECT name
+    FROM maker_cryptocurrency
+    WHERE id IN
+
+    (SELECT id FROM maker_cryptocurrency as cr,maker_metric as me WHERE me.timeslot_id=timeslot AND me.price>100 #select the currencies with higher than $100 at the given slot
+    INTERSECT
+    SELECT id
+    FROM
+    (
+    SELECT id, avg(price) as p #find currencies in the given period the average price is less than $50
+    FROM
+    (SELECT id,price FROM maker_metric as me WHERE timeslot BETWEEN period1 AND period2) as temp
+    Group By id
+    Having p<50) as temp2);
+
+''' select the people 1) who favorites the most popular currencies
+        and 2) log in more than 20 times in all
+< meaning: find the most active person who likes the most popular, can be a metric of rank$'''
+def select_common_active_user():
+    
