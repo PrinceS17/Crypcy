@@ -124,17 +124,44 @@ def select_burst_currency(timeslot, period1,period2):
 
     (SELECT id FROM maker_cryptocurrency as cr,maker_metric as me WHERE me.timeslot_id=timeslot AND me.price>100 #select the currencies with higher than $100 at the given slot
     INTERSECT
-    SELECT id
+    (SELECT id
     FROM
     (
     SELECT id, avg(price) as p #find currencies in the given period the average price is less than $50
     FROM
     (SELECT id,price FROM maker_metric as me WHERE timeslot BETWEEN period1 AND period2) as temp
     Group By id
-    Having p<50) as temp2);
+    Having p<50) as temp2));
 
 ''' select the people 1) who favorites the most popular currencies
         and 2) log in more than 20 times in all
 < meaning: find the most active person who likes the most popular, can be a metric of rank$'''
 def select_common_active_user():
-    
+
+    SELECT *                                    # give more information about these users
+    FROM maker_user
+    WHERE
+    user_id IN                                  # user_id of users meets the requirement
+    (
+    SELECT user_id
+    FROM
+    (
+    (SELECT user_id,count(time) as t             #get users log in more than 20 times in all
+    FROM maker_log
+    Group By user_id
+    Having t>20) as table1)
+
+    INTERSECT
+
+    SELECT user_id                              # select user who favorites the most popular currencies
+    FROM maker_log
+    WHERE cryoto_currency_id IN
+    (
+    SELECT cryoto_currency_id                   # select the most popular currencies
+    FROM
+    (
+    (SELECT cryoto_currency_id,count(user_id) as ct
+    FROM maker_user_favorite
+    Group By crypto_currency_id) as curr)
+    WHERE ct>=ALL(SELECT ct FROM curr))
+    );
