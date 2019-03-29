@@ -17,6 +17,17 @@ import random
 def get_tid():
     return math.floor(timezone.now().timestamp() / 3600)    # now divide by hour, able to change
 
+def make_tid():
+    return math.floor(get_tid() - 5 + random.randint(0, 10) )
+
+def dictfetchall(cursor):
+    "Return all rows from a cursor as a dict"
+    columns = [col[0] for col in cursor.description]
+    return [
+        dict(zip(columns, row))
+        for row in cursor.fetchall()
+    ]
+
 def update_news(tag, ttype, picture, content, author):
     update_news.i += 1
     with connection.cursor() as cursor:
@@ -45,6 +56,27 @@ def update_timeslot():
             VALUES(%s, %s, %s)", [tid, time, nid])
 
 update_timeslot.id = 0      # temp use
+
+
+'''
+    Make up time in [now - 5, now + 5].
+'''
+def makeup_timeslot():
+    tid = make_tid()
+    makeup_timeslot.id = tid
+    time = timezone.now().timestamp() - 10
+    if update_news.i == 0:
+        update_news('holder', 'test', 'http://images.firstcovers.com/covers/flash/f/final_exams-1558705.jpg?i', \
+            'Exam is coming!', 'Jason')
+        nid = 1
+    else:
+        nid = random.randint(1, update_news.i)
+    with connection.cursor() as cursor:
+        cursor.execute("INSERT OR REPLACE INTO maker_timeslot (id, time, related_news_id) \
+            VALUES(%s, %s, %s)", [tid, time, nid])
+
+makeup_timeslot.id = 0
+
 
 '''
 def update_user():
@@ -125,9 +157,15 @@ def get_data_from_cache():
     Maybe from online or local cache file.
     Input the search keyword like name='bitcoin' or logo='xxx'.
 '''
-def update_currency(**kwargs):
+def update_currency(mode, **kwargs):
     data = get_data_from_cache()
-    tid = get_tid()             # note tid should already exist in table! or foreign key constraint will fail
+    if mode == 'get':
+        tid = get_tid()             # note tid should already exist in table! or foreign key constraint will fail
+    elif mode == 'make':
+        if makeup_timeslot.id > 0:
+            tid = makeup_timeslot.id
+        else:
+            tid = make_tid()
 
     # insert/update the record by keyword, 1 by default
     for r in data:
