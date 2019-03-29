@@ -18,7 +18,7 @@ def index(request):
     d = get_data_from_cache()
     update_news('init', 'hihi', 'http://images.firstcovers.com/covers/flash/f/final_exams-1558705.jpg?i', \
             'Hello World!', 'Trump')
-    
+
     # schedule the timeslot
     update_timeslot()
     makeup_timeslot()
@@ -35,8 +35,34 @@ def index(request):
     tmp = d[2]['name']
     if not delete_currency(id=1):
         print('2nd delete failed. Test passed.')
-    
+
     return HttpResponse("Hello, world. You're at the maker index. Bitcoin is: %s" % tmp)
+
+def test_search(pref):
+    res=search_by_prefix('Bit');
+    res_json=json.dumps(res);
+    return HttpResponse(res_json);
+
+def test_sort_by_price():
+    res=sort_by_price();
+    res_json=json.dumps(res);
+    return HttpResponse(res_json);
+
+def test_sort_by_volume():
+    res=sort_by_volume();
+    res_json=json.dumps(res);
+    return HttpResponse(res_json);
+
+def test_sort_by_utility():
+    res=sort_by_utility();
+    res_json=json.dumps(res);
+    return HttpResponse(res_json);
+
+
+def test_sort_by_supply():
+    res=sort_by_supply();
+    res_json=json.dumps(res);
+    return HttpResponse(res_json);
 
 def adv1(request, price1, price2):
     # t1: March 28, 2019 6:00:00 PM

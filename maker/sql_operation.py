@@ -33,7 +33,7 @@ def update_news(tag, ttype, picture, content, author):
     with connection.cursor() as cursor:
         cursor.execute("INSERT OR REPLACE INTO maker_relatednews (id, tag, ttype, picture, content, author) \
             VALUES(%s, %s, %s, %s, %s, %s)", [update_news.i, tag, ttype, picture, content, author])
-    
+
 update_news.i = 0       # temp use
 
 '''
@@ -106,7 +106,7 @@ def delete_currency(**kwargs):
 
 
 '''
-    Load the data from the API to a dictionary and also a 
+    Load the data from the API to a dictionary and also a
     local cache file. Load every time slot.
 '''
 def load_data():
@@ -129,14 +129,14 @@ def load_data():
     try:
         response = session.get(url, params=parameters)
         data = json.loads(response.text)
-        
+
         # write into the cache file
         cache = open('cache.txt', 'w')
         cache.write(response.text)
         cache.close()
 
         return data['data']
-    
+
     except (ConnectionError, Timeout, TooManyRedirects) as e:
         print(e)
         return 0
@@ -153,7 +153,7 @@ def get_data_from_cache():
 
 
 '''
-    Insert/update the specified record related to crypto currency. 
+    Insert/update the specified record related to crypto currency.
     Maybe from online or local cache file.
     Input the search keyword like name='bitcoin' or logo='xxx'.
 '''
@@ -189,3 +189,110 @@ def update_currency(mode, **kwargs):
                     cursor.execute("INSERT OR REPLACE INTO maker_metric (id, volume, privacy, price, supply, utility, crypto_currency_id, timeslot_id) \
                         VALUES(%s,%s,%s,%s,%s,%s,%s,%s)", [mid, volume, privacy, price, supply, utility, r['id'], tid] )
 
+# serach by prefix
+def search_by_prefix(pref):
+    #connet to database
+    curren_obj=CryptoCurrency.objects.raw('SELECT * FROM maker_cryptocurrency WHERE name LIKE %s%%'% [pref]);
+    retlist=[];
+    for i in curren_obj:
+        curtuple=(i.id,i.name,i.logo);
+        retlist.append(curtuple);
+    return retlist;  #organize all outputs into a tuple list
+
+# sort by price, ascending
+def sort_by_price():
+    curren_obj=Metric.objects.raw('SELECT * FROM maker_metric ORDER BY price');
+    idlist=[];
+    retlist=[];
+    templist=[];
+#put all metrics attribute into a temp list
+    for i in curren_obj:
+        templist.append(i.crypto_currency_id, i.timeslot_id, i.volume, i.privacy, i.price, i.supply, i.utility)
+        idlist.append(i.cryoto_currency_id);
+
+#get corresponding names
+    for i in range(len(idlist)):
+        iter=idlist[i];
+        temp=CryptoCurrency.objects.raw('SELECT * FROM maker_cryptocurrency WHERE id=%s' % [iter]);
+        namelist.append(temp);
+
+#orgnaize all info into a list ready for return
+    for i in range(len(templist)):
+        retlist.append(templist[i][0],namelist[i],templist[i][1],templist[i][2],templist[i][3],
+        templist[i][4],templist[i][5],templist[i][6]);
+
+    return retlist;
+
+#sort by volume, descending
+def sort_by_volume():
+    curren_obj=Metric.objects.raw('SELECT * FROM maker_metric ORDER BY volume DESC');
+    idlist=[];
+    retlist=[];
+    templist=[];
+#put all metrics attribute into a temp list
+    for i in curren_obj:
+        templist.append(i.crypto_currency_id, i.timeslot_id, i.volume, i.privacy, i.price, i.supply, i.utility)
+        idlist.append(i.cryoto_currency_id);
+
+#get corresponding names
+    for i in range(len(idlist)):
+        iter=idlist[i];
+        temp=CryptoCurrency.objects.raw('SELECT * FROM maker_cryptocurrency WHERE id=%s' % [iter]);
+        namelist.append(temp);
+
+#orgnaize all info into a list ready for return
+    for i in range(len(templist)):
+        retlist.append(templist[i][0],namelist[i],templist[i][1],templist[i][2],templist[i][3],
+        templist[i][4],templist[i][5],templist[i][6]);
+
+    return retlist;
+
+#sort by supply, descending
+def sort_by_supply():
+    curren_obj=Metric.objects.raw('SELECT * FROM maker_metric ORDER BY supply DESC');
+
+    idlist=[];
+    retlist=[];
+    templist=[];
+#put all metrics attribute into a temp list
+    for i in curren_obj:
+        templist.append(i.crypto_currency_id, i.timeslot_id, i.volume, i.privacy, i.price, i.supply, i.utility)
+        idlist.append(i.cryoto_currency_id);
+
+#get corresponding names
+    for i in range(len(idlist)):
+        iter=idlist[i];
+        temp=CryptoCurrency.objects.raw('SELECT * FROM maker_cryptocurrency WHERE id=%s' % [iter]);
+        namelist.append(temp);
+
+#orgnaize all info into a list ready for return
+    for i in range(len(templist)):
+        retlist.append(templist[i][0],namelist[i],templist[i][1],templist[i][2],templist[i][3],
+        templist[i][4],templist[i][5],templist[i][6]);
+
+    return retlist;
+
+#sort by utility, descending
+def sort_by_utility():
+    curren_obj=Metric.objects.raw('SELECT * FROM maker_metric ORDER BY utility DESC');
+
+    idlist=[];
+    retlist=[];
+    templist=[];
+#put all metrics attributes into a temp list
+    for i in curren_obj:
+        templist.append(i.crypto_currency_id, i.timeslot_id, i.volume, i.privacy, i.price, i.supply, i.utility)
+        idlist.append(i.cryoto_currency_id);
+
+#get corresponding names
+    for i in range(len(idlist)):
+        iter=idlist[i];
+        temp=CryptoCurrency.objects.raw('SELECT * FROM maker_cryptocurrency WHERE id=%s' % [iter]);
+        namelist.append(temp);
+
+#orgnaize all info into a list ready for return
+    for i in range(len(templist)):
+        retlist.append(templist[i][0],namelist[i],templist[i][1],templist[i][2],templist[i][3],
+        templist[i][4],templist[i][5],templist[i][6]);
+
+    return retlist;
