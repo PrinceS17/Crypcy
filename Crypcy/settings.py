@@ -25,13 +25,18 @@ SECRET_KEY = '=-3=5e_l9l!qcz(08t!a*oyghe09enir_3^q(ch@9+9b_-99u='
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1',
+	'django-envi.p3akukj2t3.us-west-2.elasticbeanstalk.com',
+	'django-env.b6sdckadeg.us-west-2.elasticbeanstalk.com',
+	'django-env1.uu2zh2p6ur.us-west-2.elasticbeanstalk.com']
 
+# test 
 
 # Application definition
 
 INSTALLED_APPS = [
     'maker.apps.MakerConfig',
+    'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
