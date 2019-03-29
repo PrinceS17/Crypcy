@@ -10,5 +10,5 @@ class CryptoCurrencySerializer(serializers.ModelSerializer):
 class MetricSerializer(serializers.ModelSerializer):
     class Meta:
         model = Metric
-        field = ('id', 'crypto_currency', 'timeslot', 'volume', 'privacy', 'price', 'supply', 'utility')
-
+        fields = ('id', 'crypto_currency', 'timeslot', 'volume', 'privacy', 'price', 'supply', 'utility')
+        # fields = '__all__'

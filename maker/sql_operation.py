@@ -178,10 +178,12 @@ def update_currency(mode, **kwargs):
                 privacy = 9.0        # in doubt, where privacy in [0, 10]
                 utility = (volume / supply) * math.log10(privacy + 1) / price   # formula by intuition
 
+                logo = 'https://s2.coinmarketcap.com/static/img/coins/32x32/%s.png' % r['id']
+
                 # connect to database
                 with connection.cursor() as cursor:
                     cursor.execute("INSERT OR REPLACE INTO maker_cryptocurrency (id,name,logo) \
-                        VALUES(%s,%s,%s)", [r['id'], r['name'], r['slug']] )
+                        VALUES(%s,%s,%s)", [r['id'], r['name'], logo] )
 
                     # here need time slot to determine the metric id
                     cursor.execute("INSERT OR REPLACE INTO maker_metric (id, volume, privacy, price, supply, utility, crypto_currency_id, timeslot_id) \

@@ -1,5 +1,8 @@
 from rest_framework import permissions
 from django.http import HttpResponse
+from django.db import connection
+from maker.sql_operation import dictfetchall
+
 
 from rest_framework.generics import (
     ListAPIView,
@@ -40,6 +43,13 @@ class MetricListView(ListAPIView):
     queryset = Metric.objects.all()
     serializer_class = MetricSerializer
     permission_classes = (permissions.AllowAny, )
+
+# class MetricDetailView(RetrieveAPIView):
+#     with connection.cursor() as cursor:
+#         cursor.execute()
+
+#     serializer_class = MetricSerializer
+#     permission_classes = (permissions.AllowAny, )
 
 def test_view(request):
     return HttpResponse("Test view: passed.")
