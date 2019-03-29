@@ -2,7 +2,7 @@ import sqlite3
 from proj.db import connection
 
 # search crypto-currencies based on prefix
-def search_by_prefix(pref):
+'''def search_by_prefix(pref):
     curren_obj=CryptoCurrency.objects.raw('SELECT * FROM maker_cryptocurrency WHERE name LIKE %s%%'% [pref]);
     retlist=[];
     for i in curren_obj:
@@ -10,7 +10,7 @@ def search_by_prefix(pref):
         retlist.append(curtuple);
     return retlist;  #organize all outputs into a tuple list
 
-
+'''
 # sort by price, ascending
 def sort_by_price():
     curren_obj=Metric.objects.raw('SELECT * FROM maker_metric ORDER BY price');
