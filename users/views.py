@@ -98,6 +98,7 @@ def currency_advice(request, num, type):
         res += dictfetchall(cursor)
         i += 1
         if i > 3: break
+
             
     res_json = json.dumps(res)
     return HttpResponse(res_json)
