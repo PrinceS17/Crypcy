@@ -1,5 +1,6 @@
 from rest_framework import generics
 from django.http import HttpResponse
+from django.db import connection
 
 from requests import Request, Session
 from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
@@ -38,7 +39,7 @@ def currency_advice(request, num, type):
     # fetch (currency_id, price) for variance calculation
     with connection.cursor() as cursor:
         cursor.execute('''SELECT crypto_currency_id AS id, price FROM maker_metric''')
-    tmp = dictfetchall(cursor)
+        tmp = dictfetchall(cursor)
     prices = {}                 # dict: {id:[price 1, price 2, ...]}
     variance = {}               # dict: {id: variance}
     for e in tmp:
@@ -48,7 +49,7 @@ def currency_advice(request, num, type):
     
     for id in prices:
         variance[id] = numpy.var(prices[id])
-    variance = sort_dict(variance, False)          
+    variance = sort_dict(variance, False)
 
     # fetch (currency_id, cur_utility) for utility evaluation (use latest data)
     with connection.cursor() as cursor:
@@ -57,7 +58,7 @@ def currency_advice(request, num, type):
                             SELECT MAX(timeslot_id) FROM maker_metric m1
                             WHERE m1.crypto_currency_id = m.crypto_currency_id
                         )''')
-    tmp_uti = dictfetchall(cursor)
+        tmp_uti = dictfetchall(cursor)
     cur_utility = {}
     for e in tmp_uti:
         cur_utility[e['id']] = e['utility']
@@ -66,7 +67,9 @@ def currency_advice(request, num, type):
     grps = {}                   # dict of dict
     i = 0
     for id in variance:
-        tag = i * 3 / len(variance)
+        tag = int(numpy.floor(i * 3 / len(variance)))
+        if id is None: continue
+        elif id not in cur_utility: continue
         if tag not in grps:
             grps[tag] = {id:cur_utility[id]}
         else: grps[tag][id] = cur_utility[id]
@@ -74,15 +77,12 @@ def currency_advice(request, num, type):
 
     for tag in grps:
         grps[tag] = sort_dict(grps[tag], True)  # sort the 3 groups by utility
-        print(grps[tag])                        # debug here
 
     # fetch id, name, logo, current price & utility & return list of dict (based on given num and risk type)
     queries = []
     res = []
-    if type == 'low':
-        ttag = 0
-    elif type == 'moderate':
-        ttag = 1
+    if type == 'low': ttag = 0
+    elif type == 'moderate': ttag = 1
     else: ttag = 2
     i = 0
     for id in grps[ttag]:       # for loop: easy to extend to N currencies
@@ -95,11 +95,12 @@ def currency_advice(request, num, type):
                     ) ''' % (id)]
         with connection.cursor() as cursor:
             cursor.execute(queries[i])
-        res += dictfetchall(cursor)
+            temp = dictfetchall(cursor)
+        temp[0]['variance'] = variance[id]
+        res += temp
         i += 1
-        if i > 3: break
+        if i >= num: break
 
-            
     res_json = json.dumps(res)
     return HttpResponse(res_json)
 
