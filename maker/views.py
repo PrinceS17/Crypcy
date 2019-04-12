@@ -10,6 +10,7 @@ import sqlite3
 from .sql_operation import *
 from .complicated_sql import get_efficient_currency, get_burst_currency
 
+from .SQL_Query import *
 
 def index(request):
 
@@ -50,5 +51,31 @@ def adv1(request, price1, price2):
 
 def adv2(request, price):
     res = get_efficient_currency(price)
+    res_json = json.dumps(res)
+    return HttpResponse(res_json)
+
+# Begin --Zou
+def sort_by_vol(request):
+    res = sort_by_volume()
+    res_json = json.dumps(res)
+    return HttpResponse(res_json)
+
+def search_by_pref(request,pref):
+    res = search_by_prefix(pref)
+    res_json = json.dumps(res)
+    return HttpResponse(res_json)
+
+def sort_by_pri(request):
+    res = sort_by_price()
+    res_json = json.dumps(res)
+    return HttpResponse(res_json)
+
+def sort_by_sup(request):
+    res = sort_by_supply()
+    res_json = json.dumps(res)
+    return HttpResponse(res_json)
+
+def sort_by_util(request):
+    res = sort_by_utility()
     res_json = json.dumps(res)
     return HttpResponse(res_json)
