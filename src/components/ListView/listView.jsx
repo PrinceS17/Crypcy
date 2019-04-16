@@ -18,11 +18,11 @@ class ListView extends Component{
     }
 
     fetchList(){
-        const tempURL = `http://127.0.0.1:8000/api/`;
+        // const tempURL = `http://127.0.0.1:8000/api/`;
+        const tempURL = `http://34.216.221.19:8000/api/currency/`
         axios.get(tempURL).then(res=>{
             this.setState({
                 collection: res.data,
-
             });
             console.log(res.data);
         })
@@ -83,11 +83,7 @@ class ListView extends Component{
         let errorMessage = this.state.errorState===1? "Input Unvalid":"";
         if(this.state.errorState===2)  errorMessage="Insert Successful";
         return(
-            <GeneralLayout>
-                <Article data = {this.state.collection} detailURL = '../detail/' />
-                {/* {this.giveForm()}<br />
-                {errorMessage} */}
-            </GeneralLayout>
+            <Article data = {this.state.collection} detailURL = '../detail/' />
         );
     }
 }

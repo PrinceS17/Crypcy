@@ -5,8 +5,8 @@ import App from './components/App/App';
 import * as serviceWorker from './serviceWorker';
 import 'semantic-ui-css/semantic.min.css'
 import {createStore, compose, applyMiddleware} from 'redux';
-import thunk from 'react-redux';
-import reducer from "./Store/reducer/auth";
+import thunk from 'redux-thunk';
+import reducer from "./store/reducers/auth";
 import {Provider} from 'react-redux'
 
 

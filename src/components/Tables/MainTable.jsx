@@ -1,27 +1,6 @@
 import { Table, Button } from 'antd';
 import React from 'react';
 
-// const data = [{
-//   key: '1',
-//   name: 'Dog',
-//   age: 32,
-//   address: 'New York No. 1 Lake Park',
-// }, {
-//   key: '2',
-//   name: 'Book',
-//   age: 42,
-//   address: 'London No. 1 Lake Park',
-// }, {
-//   key: '3',
-//   name: 'Cat',
-//   age: 32,
-//   address: 'Sidney No. 1 Lake Park',
-// }, {
-//   key: '4',
-//   name: 'Apple',
-//   age: 32,
-//   address: 'London No. 2 Lake Park',
-// }];
 
 class MainTable extends React.Component {
   state = {
