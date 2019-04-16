@@ -8,7 +8,8 @@ from . import models
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.CustomUser
-        fields = ('username', 'email', 'name', 'gender', 'interest_tag', )
+        fields = ('username', 'email', 'name', 'gender', 'interest_tag', 'favorite')
+        # fields = '__all__'
 
 class CustomRegistrationSerializer(RegisterSerializer):
     name = serializers.CharField(required=False)
