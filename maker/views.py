@@ -17,7 +17,7 @@ import operator
 
 
 def index(request):
-    mode = ['get', 'get', 'no', 'no']     # [load/get data, get/make timeslot, delete?, load news?]
+    mode = ['get', 'get', 'no', 'yes']     # [load/get data, get/make timeslot, delete?, load news?]
     print('\nMode here: ')
     print('Load/get data: ', mode[0])
     print('Get/make timeslot: ', mode[1])

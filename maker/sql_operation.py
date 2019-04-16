@@ -114,7 +114,7 @@ def load_data(time=None):
     url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
     parameters = {
         'start': '1',
-        'limit': '120',
+        'limit': '1000',
         'convert': 'USD',
         #'sort': 'price',
         #'sort_dir':'desc',
