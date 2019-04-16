@@ -25,7 +25,8 @@ SECRET_KEY = '^i%^6=a!jnntxa1vc$g((2)_&c36&%j^4#rj2(5+^%u@l86ky$'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1',
+                '0.0.0.0']
 
 
 # Application definition
@@ -47,9 +48,11 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
 
-    'api',
     'users',
+    'maker'
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -117,7 +120,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Chicago'
 
 USE_I18N = True
 
@@ -132,8 +135,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-SITE_ID = 1
 
 AUTH_USER_MODEL = 'users.CustomUser'
 

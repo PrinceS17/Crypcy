@@ -1,0 +1,34 @@
+from django.http import HttpResponse
+from requests import Request, Session
+from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
+
+import json
+import sqlite3
+
+from .SQL_Query import *
+
+
+def index(request):
+    return HttpResponse('Welcome to basic operations!')
+
+# Begin --Zou
+# remove 1 line of assignment
+def sort_by_vol(request):
+    res = sort_by_volume()
+    return HttpResponse(json.dumps(res))
+
+def search_by_pref(request,pref):
+    res = search_by_prefix(pref)
+    return HttpResponse(json.dumps(res))
+
+def sort_by_pri(request):
+    res = sort_by_price()
+    return HttpResponse(json.dumps(res))
+
+def sort_by_sup(request):
+    res = sort_by_supply()
+    return HttpResponse(json.dumps(res))
+
+def sort_by_util(request):
+    res = sort_by_utility()
+    return HttpResponse(json.dumps(res))
