@@ -58,6 +58,7 @@ INSTALLED_APPS = [
 SITE_ID = 1
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -149,6 +150,14 @@ EMAIL_HOST_PASSWORD = 'crypcyemail'
 ACCOUNT_EMAIL_REQUIRED = True
 
 AUTH_USER_MODEL = 'users.CustomUser'
+
+# allow all domains
+CORS_ORIGIN_ALLOW_ALL = True
+
+CORS_ORIGIN_WHITELIST = (
+    'http://127.0.0.1:8000',
+    'http://0.0.0.0:8000',
+)
 
 # stack overflow version
 REST_AUTH_REGISTER_SERIALIZERS = {
