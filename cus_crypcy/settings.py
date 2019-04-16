@@ -139,12 +139,12 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 AUTH_USER_MODEL = 'users.CustomUser'
 
 # stack overflow version
-# REST_AUTH_REGISTER_SERIALIZERS = {
-#     'REGISTER_SERIALIZER': 'users.serializers.CustomRegistrationSerializer',
-    # 'REGISTER_SERIALIZER': 'api.serializers.CustomRegistrationSerializer',
-# }
+REST_AUTH_REGISTER_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'users.serializers.CustomRegistrationSerializer',
+}
 
 # django rest auth doc version
-# REST_AUTH_SERIALIZERS = {
-#     'REGISTER_SERIALIZER': 'users.serializers.CustomRegistrationSerializer',
-# }
+REST_AUTH_SERIALIZERS = {
+    # 'REGISTER_SERIALIZER': 'users.serializers.CustomRegistrationSerializer',
+    'USER_DETAILS_SERIALIZER': 'users.serializers.UserSerializer',
+}

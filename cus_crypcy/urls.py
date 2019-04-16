@@ -15,17 +15,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from users.serializers import CustomRegistrationView
+from users.views import CustomRegistrationView, CustomDetailView
 
 
 urlpatterns = [
     path('admin/', admin.site.urls), 
     path('api-auth/', include('rest_framework.urls')),
     path('rest-auth/', include('rest_auth.urls')),
-    # path('rest-auth/registration/', include('rest_auth.registration.urls')),  # now in users/
-    path('rest-auth/registration/', CustomRegistrationView.as_view(), name="custom register"),
-    
-    path('users/', include('users.urls')),
+    path('rest-auth/registration/', include('rest_auth.registration.urls')),  # now in users/
+    # path('rest-auth/registration/', CustomRegistrationView.as_view(), name="custom register"),    # alternative, but dirty
+    path('users/', include('users.urls')),        # dirty solution to use advice (adv func 1)
+
     path('maker/', include('maker.urls')),
     path('api/', include('maker.api.urls')),
 ]

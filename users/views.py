@@ -1,4 +1,10 @@
-from rest_framework import generics
+from rest_auth.registration.serializers import RegisterSerializer
+from rest_auth.registration.views import RegisterView
+from rest_framework import permissions, serializers, generics
+from rest_framework.generics import RetrieveUpdateAPIView
+from . import models
+from .serializers import *
+
 from django.http import HttpResponse
 from django.db import connection
 
@@ -8,13 +14,24 @@ from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
 import json
 import sqlite3
 
-from . import models
-from . import serializers
-
 # dependent of advance function 1
 import numpy
 import collections
 import operator
+
+class UserListView(generics.ListCreateAPIView):
+    queryset = models.CustomUser.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (permissions.IsAuthenticated, )
+
+class CustomRegistrationView(RegisterView):
+    serializer_class = CustomRegistrationSerializer
+
+class CustomDetailView(RetrieveUpdateAPIView):
+    queryset = models.CustomUser.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (permissions.IsAuthenticated, )
+
 
 def dictfetchall(cursor):
     "Return all rows from a cursor as a dict"
@@ -24,9 +41,6 @@ def dictfetchall(cursor):
         for row in cursor.fetchall()
     ]
 
-class UserListView(generics.ListCreateAPIView):
-    queryset = models.CustomUser.objects.all()
-    serializer_class = serializers.UserSerializer
 
 '''
     Advance function 1: 
