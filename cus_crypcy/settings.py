@@ -68,6 +68,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# seems not a normal way, we can use exempt decorator
+# MIDDLEW_CLASSES = [
+#     'users.disable.DisableCSRF',
+# ]
+
 ROOT_URLCONF = 'cus_crypcy.urls'
 
 TEMPLATES = [
