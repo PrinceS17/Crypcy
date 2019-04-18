@@ -45,6 +45,10 @@ def index(request):
         update_timeslot()
     else:
         makeup_timeslot()
+    
+    # complete timeslot
+    print('Completing timeslot...')
+    complete_time()
 
     # insert enough currency infomation
     print('Updating currency...')

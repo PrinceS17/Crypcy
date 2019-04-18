@@ -37,6 +37,32 @@ def update_news(tag, ttype, picture, content, author):
 update_news.i = 0       # temp use
 
 '''
+    Check and update all the times and newsId in timeslot table.
+    Ensure the data integrity in timeslot.
+'''
+def complete_time():
+    with connection.cursor() as cursor:
+        cursor.execute(''' SELECT timeslot_id AS id FROM maker_metric
+            INTERSECT SELECT id FROM maker_timeslot''')
+        res1 = dictfetchall(cursor)
+        cursor.execute('SELECT COUNT(*) AS cnt FROM maker_relatednews')
+        res2 = dictfetchall(cursor)
+    
+    if len(res1) == 0: return
+    num = res2[0]['cnt']
+    print('Incomplete timeslot: ', res1)
+    print('# News: ', num)
+
+    for i in range(len(res1)):
+        tid = res1[i]['id']
+        time = tid * 3600
+        nid = random.randint(1, num)
+        with connection.cursor() as cursor:
+            cursor.execute('INSERT OR REPLACE INTO maker_timeslot (id, time, related_news_id) \
+            VALUES(%s, %s, %s)', [tid, time, nid])
+
+
+'''
     Schedule time and load data every time slot.
 '''
 def update_timeslot():

@@ -12,7 +12,7 @@ def search_by_prefix(pref):
     with connection.cursor() as cursor:
         cursor.execute('''SELECT *
         FROM maker_cryptocurrency as cr, maker_metric as me
-        WHERE cr.id=me.crypto_currency_id AND cr.name LIKE "%s%%" AND me.timeslot_id = 
+        WHERE cr.id=me.crypto_currency_id AND cr.name LIKE "%%%s%%" AND me.timeslot_id = 
         (   
             SELECT MAX(timeslot_id) 
             FROM maker_metric WHERE crypto_currency_id = cr.id
@@ -89,7 +89,7 @@ def filter_coin(p1, p2, u1, u2):
     p2 = 10000 if p2 == '' else p2
     u1 = 0 if u1 == '' else u1
     u2 = 10000 if u2 == '' else u2
-    
+
     with connection.cursor() as cursor:
         cursor.execute('''SELECT *
         FROM maker_cryptocurrency cr, maker_metric me where cr.id = me.crypto_currency_id
@@ -109,7 +109,14 @@ def get_detail(id, name):
     value = id if id !='' else name
     with connection.cursor() as cursor:
         cursor.execute('''SELECT *
-        FROM maker_cryptocurrency cr, maker_metric me where cr.id = me.crypto_currency_id AND cr.%s = '%s'
+        FROM maker_cryptocurrency cr JOIN maker_metric me ON cr.id = me.crypto_currency_id
+                JOIN maker_timeslot t ON me.timeslot_id = t.id
+        WHERE cr.%s = '%s'
         ORDER BY me.timeslot_id DESC ''' % (key, value))
         res = dictfetchall(cursor)
+    # interesting internal bug here: no time fetched from sqlite!
+    for i in range(len(res)):
+        if res[i]['time'] is None:
+            res[i]['time'] = res[i]['timeslot_id'] * 3600       # a patch here
+
     return res
