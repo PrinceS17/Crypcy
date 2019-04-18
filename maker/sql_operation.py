@@ -262,6 +262,7 @@ def load_news():
     Update historical data and write to Cache for given coin. 
     From crypto compare here. --Song
 '''
+
 def load_history(sym):
     # get history of symbol from crypto compare API
     api_key = '9e60336ab74b49376ab8d19a2897ad5a23b9235edb1751ebd60cfdec3769f203'
@@ -292,7 +293,7 @@ def load_history(sym):
         mid = (tid % 1e6) * (id % 1e6)
         volume_1h = r['volumeto'] - r['volumefrom']
         utility = value_maker(volume_1h, supply, privacy, price)
-        
+
         with connection.cursor() as cursor:
             cursor.execute("INSERT OR REPLACE INTO maker_metric (id, volume, privacy, price, supply, utility, crypto_currency_id, timeslot_id) \
                         VALUES(%s,%s,%s,%s,%s,%s,%s,%s)", [mid, volume_1h, privacy, r['open'], supply, utility, id, tid] )
