@@ -224,7 +224,7 @@ def update_currency(mode, **kwargs):
                 price = r['quote']['USD']['price']
                 volume = r['quote']['USD']['volume_24h']
                 privacy = 9.0        # in doubt, where privacy in [0, 10]
-                utility = (volume / supply) * math.log10(privacy + 1) / price   # formula by intuition
+                utility = value_maker(volume, supply, privacy, price)
 
                 logo = 'https://s2.coinmarketcap.com/static/img/coins/32x32/%s.png' % r['id']
 
@@ -263,6 +263,7 @@ def load_news():
     From crypto compare here. --Song
 '''
 def load_history(sym):
+    # get history of symbol from crypto compare API
     api_key = '9e60336ab74b49376ab8d19a2897ad5a23b9235edb1751ebd60cfdec3769f203'
     url = 'https://min-api.cryptocompare.com/data/histohour?fsym=%s&tsym=USD&limit=1000&api_key=%s' % (sym, api_key)
 
@@ -270,12 +271,36 @@ def load_history(sym):
     try:
         response = session.get(url)
         data = json.loads(response.text)
-
-
-
-        
-    
+        cache = open('history_%s.txt' % sym, 'w')
+        cache.write(response.text)
     except (ConnectionError, Timeout, TooManyRedirects) as e:
         print(e)
         return 0
         
+    # get currency Id from cache
+    d1 = get_data_from_cache()
+    for r in d1:
+        if r['symbol'] == sym: 
+            id = r['id']
+            supply = r['circulating_supply']
+            break
+
+    # update them into sqlite database: (attribute in doubt: volume, supply, privacy?)
+    data = data['data']
+    for r in data:
+        tid = r['time'] / 3600
+        mid = (tid % 1e6) * (id % 1e6)
+        volume_1h = r['volumeto'] - r['volumefrom']
+        utility = value_maker(volume_1h, supply, privacy, price)
+        
+        with connection.cursor() as cursor:
+            cursor.execute("INSERT OR REPLACE INTO maker_metric (id, volume, privacy, price, supply, utility, crypto_currency_id, timeslot_id) \
+                        VALUES(%s,%s,%s,%s,%s,%s,%s,%s)", [mid, volume_1h, privacy, r['open'], supply, utility, id, tid] )
+
+
+'''
+    The utility calculator with formula from learning. -- Song
+'''
+def value_maker(volume, supply, privacy, price):
+    utility = (volume / supply) * math.log10(privacy + 1) / price   # formula by intuition
+    return utility
