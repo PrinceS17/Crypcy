@@ -34,7 +34,9 @@ class Timeslot(models.Model):
 
 class CryptoCurrency(models.Model):
     name = models.CharField(max_length=200)
+    symbol = models.CharField(max_length=20, null=True)    # BTC
     logo = models.URLField()        # in doubt
+    description = models.TextField('About', null=True)
     time = models.ManyToManyField(Timeslot, 
         through='Metric', 
         through_fields=('crypto_currency', 'timeslot') )

@@ -138,9 +138,10 @@ def delete_currency(**kwargs):
 def load_data(time=None):
     
     url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
+    url2 = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/info'
     parameters = {
         'start': '1',
-        'limit': '1000',
+        'limit': '200',
         'convert': 'USD',
         #'sort': 'price',
         #'sort_dir':'desc',
@@ -157,12 +158,26 @@ def load_data(time=None):
         response = session.get(url, params=parameters)
         data = json.loads(response.text)
         
+        sym_list = ''
+        for i in range(len(data['data'])):
+            symbol = data['data'][i]['symbol']
+            sym_list += symbol
+            if i != len(data['data']) - 1: sym_list += ','
+        
+        params = {'symbol': sym_list}
+        response2 = session.get(url2, params=params)
+        data2 = json.loads(response2.text)
+        for i in range(len(data['data'])):
+            symbol = data['data'][i]['symbol']
+            data['data'][i]['description'] = data2['data'][symbol]['description']
+        
         # write into the cache file
         if time is None:
             cache = open('cache.txt', 'w')
         else:
             cache = open('cache_%s.txt' % time, 'w')
-        cache.write(response.text)
+        resp = json.dumps(data, indent=4)
+        cache.write(resp)
         cache.close()
 
         return data['data']
@@ -215,8 +230,8 @@ def update_currency(mode, **kwargs):
 
                 # connect to database
                 with connection.cursor() as cursor:
-                    cursor.execute("INSERT OR REPLACE INTO maker_cryptocurrency (id,name,logo) \
-                        VALUES(%s,%s,%s)", [r['id'], r['name'], logo] )
+                    cursor.execute("INSERT OR REPLACE INTO maker_cryptocurrency (id,name,symbol,logo,description) \
+                        VALUES(%s,%s,%s,%s,%s)", [r['id'], r['name'], r['symbol'], logo, r['description']] )
 
                     # here need time slot to determine the metric id
                     cursor.execute("INSERT OR REPLACE INTO maker_metric (id, volume, privacy, price, supply, utility, crypto_currency_id, timeslot_id) \
