@@ -109,11 +109,12 @@ def delete_currency(**kwargs):
     Load the data from the API to a dictionary and also a
     local cache file. Load every time slot.
 '''
-def load_data():
+def load_data(time=None):
+
     url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
     parameters = {
         'start': '1',
-        'limit': '120',
+        'limit': '1000',
         'convert': 'USD',
         #'sort': 'price',
         #'sort_dir':'desc',
@@ -121,7 +122,7 @@ def load_data():
     }
     headers = {
         'Accepts': 'application/json',
-        'X-CMC_PRO_API_KEY': '441cb5ae-6618-4110-8db9-df9cba2b05ec',
+        'X-CMC_PRO_API_KEY': 'fc5c03fd-2394-4df2-8e25-20dd037536a0',
     }
     session = Session()
     session.headers.update(headers)
@@ -131,7 +132,10 @@ def load_data():
         data = json.loads(response.text)
 
         # write into the cache file
-        cache = open('cache.txt', 'w')
+        if time is None:
+            cache = open('cache.txt', 'w')
+        else:
+            cache = open('cache_%s.txt' % time, 'w')
         cache.write(response.text)
         cache.close()
 
@@ -145,8 +149,11 @@ def load_data():
     Get crypto currency data from cache but not website API.
     Return the data part of cache, i.e. a list of all entry dictionaries.
 '''
-def get_data_from_cache():
-    cache = open('cache.txt', 'r')
+def get_data_from_cache(time=None):
+    if time is None:
+        cache = open('cache.txt', 'r')
+    else:
+        cache = open('cache_%s.txt' % time, 'r')
     data_all = json.loads(cache.read())
     cache.close()
     return data_all['data']
@@ -188,3 +195,53 @@ def update_currency(mode, **kwargs):
                     # here need time slot to determine the metric id
                     cursor.execute("INSERT OR REPLACE INTO maker_metric (id, volume, privacy, price, supply, utility, crypto_currency_id, timeslot_id) \
                         VALUES(%s,%s,%s,%s,%s,%s,%s,%s)", [mid, volume, privacy, price, supply, utility, r['id'], tid] )
+
+'''
+    Load related news from manually collected file. -- Song
+'''
+def load_news():
+    # customized only for the initial content of news.txt, subject to change!
+    tags = ['Bitcoin', 'security', 'talk', 'price', 'monitor']
+    ttype = [1 for _ in range(5)]
+    picture = ['https://cimg.co/w/articles-attachments/3/5ca/6f3b2a6990.jpg',
+                'https://cimg.co/w/articles-attachments/3/5ca/5df40be82d.jpg',
+                'https://cimg.co/w/articles-attachments/3/5ca/5c3e760583.jpg',
+                'https://cimg.co/w/articles-attachments/3/5ca/1ece276e70.jpg',
+                'https://cimg.co/w/articles-attachments/3/5ca/6c89e932ab.jpg']
+
+    with open('news.txt') as f:
+        content = f.readlines()
+    content = [x.strip() for x in content]
+    # print(content[2])       # only for test
+
+    for i in range(5):
+        update_news(tags[i], ttype[i], picture[i], content[i], '')
+
+
+#Begin---Zou
+def load_news1():
+    url = 'https://min-api.cryptocompare.com/data/v2/news/?lang=EN'
+    headers = {
+        'Accepts': 'application/json',
+        'X-CMC_PRO_API_KEY': 'd7b9c12f8285934f9137a8448308ea51bdc40e47e8608146946b3d471e8f8320',
+    }
+    session = Session()
+    session.headers.update(headers)
+    try:
+        response = session.get(url)
+        data = json.loads(response.text)
+        return data['Data']
+    except (ConnectionError, Timeout, TooManyRedirects) as e:
+        print(e)
+        return 0
+
+
+def update_news1():
+    data = load_news1()
+    for r in data:
+        tag = r['tags']
+        ttype = r['categories']
+        picture = r['imageurl']
+        content = r['body']
+        author = r['source']
+        update_news(tag,ttype,picture,content,author)

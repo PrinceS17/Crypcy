@@ -79,3 +79,12 @@ def sort_by_util(request):
     res = sort_by_utility()
     res_json = json.dumps(res)
     return HttpResponse(res_json)
+
+def update_news_version2(request):
+    update_news1()
+    with connection.cursor() as cursor:
+        cursor.execute('''SELECT * FROM maker_relatednews
+        ''' )
+        res = dictfetchall(cursor)
+    res_json = json.dumps(res)
+    return HttpResponse(res_json)
