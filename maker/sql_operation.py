@@ -281,7 +281,7 @@ def load_news():
 def load_history(id, sym, supply):
     # get history of symbol from crypto compare API
     api_key = '9e60336ab74b49376ab8d19a2897ad5a23b9235edb1751ebd60cfdec3769f203'
-    url = 'https://min-api.cryptocompare.com/data/histoday?fsym=%s&tsym=USD&limit=700&api_key=%s' % (sym, api_key)
+    url = 'https://min-api.cryptocompare.com/data/histoday?fsym=%s&tsym=USD&limit=200&api_key=%s' % (sym, api_key)
 
     try:
         os.mkdir('History')
@@ -324,7 +324,7 @@ def insert_all_history():
     d1 = get_data_from_cache()
     start = False
     for r in d1:
-        if r['symbol'] == 'ETP': start = True
+        if r['symbol'] == 'BTC': start = True
         if not start: continue
         load_history(r['id'], r['symbol'], r['circulating_supply'])
         print(' - coin ', r['id'], ': ', r['symbol'], ' inserted')
