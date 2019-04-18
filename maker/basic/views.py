@@ -34,9 +34,16 @@ def sort_by_util(request):
     return HttpResponse(json.dumps(res))
 
 def filter(request):
-    p1 = request.GET.get('price1')
-    p2 = request.GET.get('price2')
-    u1 = request.GET.get('utility1')
-    u2 = request.GET.get('utility2')
+    p1 = request.GET.get('price1', '0')
+    p2 = request.GET.get('price2', '10000')
+    u1 = request.GET.get('utility1', '-1')
+    u2 = request.GET.get('utility2', '10000')
     res = filter_coin(p1, p2, u1, u2)
     return HttpResponse(json.dumps(res))
+
+def detail(request):
+    id = request.GET.get('id', '')
+    name = request.GET.get('name', '')
+    res = get_detail(id, name)
+    return HttpResponse(json.dumps(res))
+

@@ -10,4 +10,5 @@ urlpatterns = [
     path('by_util/', views.sort_by_util, name='sort_by_util'),
     path('pref/<pref>/', views.search_by_pref, name= 'search_by_pref'),
     re_path(r'^filter.*/?$', views.filter, name='filter'),
+    re_path(r'^detail.*/?$', views.detail, name='detail'),
 ]
