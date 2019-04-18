@@ -32,3 +32,11 @@ def sort_by_sup(request):
 def sort_by_util(request):
     res = sort_by_utility()
     return HttpResponse(json.dumps(res))
+
+def filter(request):
+    p1 = request.GET.get('price1')
+    p2 = request.GET.get('price2')
+    u1 = request.GET.get('utility1')
+    u2 = request.GET.get('utility2')
+    res = filter_coin(p1, p2, u1, u2)
+    return HttpResponse(json.dumps(res))

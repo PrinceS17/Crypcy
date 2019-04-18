@@ -81,3 +81,18 @@ def sort_by_utility():
     return res
 
 #----end Ruixin Zou
+
+# filter currencies by price or utility
+def filter_coin(p1, p2, u1, u2):
+    with connection.cursor() as cursor:
+        cursor.execute('''SELECT *
+        FROM maker_cryptocurrency cr, maker_metric me where cr.id = me.crypto_currency_id
+            AND (me.price BETWEEN %s AND %s ) AND (me.utility BETWEEN %s AND %s )
+            AND me.timeslot_id = 
+        (   
+            SELECT MAX(timeslot_id) 
+            FROM maker_metric WHERE crypto_currency_id = cr.id
+        )
+        ''' % (p1, p2, u1, u2))
+        res = dictfetchall(cursor)
+    return res
