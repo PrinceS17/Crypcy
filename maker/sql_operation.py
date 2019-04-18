@@ -12,10 +12,12 @@ import json
 import sqlite3
 import math
 import random
+import os
 #import pymysql
 
-def get_tid():
-    return math.floor(timezone.now().timestamp() / 3600)    # now divide by hour, able to change
+def get_tid(time=None):
+    time = timezone.now().timestamp() if time is None else time
+    return math.floor(time / 3600)    # now divide by hour, able to change
 
 def make_tid():
     return math.floor(get_tid() - 5 + random.randint(0, 10) )
@@ -83,6 +85,20 @@ def update_timeslot():
 
 update_timeslot.id = 0      # temp use
 
+'''
+    Generate timeslot from timestamp.
+'''
+def generate_timeslot(time=None):
+    time = timezone.now().timestamp() if time is None else time
+    tid = math.floor(time / 3600)
+    with connection.cursor() as cursor:
+        cursor.execute('SELECT COUNT(*) AS cnt FROM maker_relatednews')
+        res = dictfetchall(cursor)
+        num = res[0]['cnt']
+        nid = random.randint(1, num)
+        cursor.execute("INSERT OR REPLACE INTO maker_timeslot (id, time, related_news_id) \
+            VALUES(%s, %s, %s)", [tid, time, nid])
+    return tid
 
 '''
     Make up time in [now - 5, now + 5].
@@ -262,46 +278,91 @@ def load_news():
     Update historical data and write to Cache for given coin. 
     From crypto compare here. --Song
 '''
-
-def load_history(sym):
+def load_history(id, sym, supply):
     # get history of symbol from crypto compare API
     api_key = '9e60336ab74b49376ab8d19a2897ad5a23b9235edb1751ebd60cfdec3769f203'
-    url = 'https://min-api.cryptocompare.com/data/histohour?fsym=%s&tsym=USD&limit=1000&api_key=%s' % (sym, api_key)
+    url = 'https://min-api.cryptocompare.com/data/histoday?fsym=%s&tsym=USD&limit=700&api_key=%s' % (sym, api_key)
+
+    try:
+        os.mkdir('History')
+    except OSError:
+        pass
+    else: pass
 
     session = Session()
     try:
         response = session.get(url)
         data = json.loads(response.text)
-        cache = open('history_%s.txt' % sym, 'w')
+        path = os.path.join('History', 'history_%s.txt' % sym)
+        cache = open(path, 'w')
         cache.write(response.text)
     except (ConnectionError, Timeout, TooManyRedirects) as e:
         print(e)
         return 0
-        
-    # get currency Id from cache
-    d1 = get_data_from_cache()
-    for r in d1:
-        if r['symbol'] == sym: 
-            id = r['id']
-            supply = r['circulating_supply']
-            break
 
     # update them into sqlite database: (attribute in doubt: volume, supply, privacy?)
-    data = data['data']
+    data = data['Data']
     for r in data:
-        tid = r['time'] / 3600
+        tid = generate_timeslot(r['time'])
         mid = (tid % 1e6) * (id % 1e6)
-        volume_1h = r['volumeto'] - r['volumefrom']
-        utility = value_maker(volume_1h, supply, privacy, price)
+        volume_24h = r['volumeto']      # volume in USD
+        if volume_24h == 0: continue
+        price = r['open']
+        privacy = 8.0
+        utility = value_maker(volume_24h, supply, privacy, price)
 
         with connection.cursor() as cursor:
             cursor.execute("INSERT OR REPLACE INTO maker_metric (id, volume, privacy, price, supply, utility, crypto_currency_id, timeslot_id) \
-                        VALUES(%s,%s,%s,%s,%s,%s,%s,%s)", [mid, volume_1h, privacy, r['open'], supply, utility, id, tid] )
+                        VALUES(%s,%s,%s,%s,%s,%s,%s,%s)", [mid, volume_24h, privacy, price, supply, utility, id, tid] )
+    
+    cache.close()
 
+'''
+    Insert the history data of all currencies using load_history.
+'''
+def insert_all_history():
+    d1 = get_data_from_cache()
+    start = False
+    for r in d1:
+        if r['symbol'] == 'ETP': start = True
+        if not start: continue
+        load_history(r['id'], r['symbol'], r['circulating_supply'])
+        print(' - coin ', r['id'], ': ', r['symbol'], ' inserted')
+    complete_time()
+
+def insert_all_volume():
+    d1 = get_data_from_cache()
+    for r in d1:
+        sym = r['symbol']
+        id = r['id']
+        path = os.path.join('History', 'history_%s.txt' % sym)
+        cache = open(path, 'r')
+        data = json.loads(cache.read())
+        for rr in data['Data']:
+            volume = rr['volumeto']
+            tid = get_tid(rr['time'])
+            with connection.cursor() as cursor:
+                cursor.execute("UPDATE maker_metric SET volume = %s \
+                    WHERE crypto_currency_id = %s AND timeslot_id = %s", [volume, id, tid])
+        print(' - coin ', r['id'], ': ', r['symbol'], ' repaired')
+        cache.close()
+
+def insert_all_coin():
+    d1 = get_data_from_cache()
+    cnt = 1
+    for r in d1:
+        logo = 'https://s2.coinmarketcap.com/static/img/coins/32x32/%s.png' % r['id']
+        with connection.cursor() as cursor:
+            cursor.execute("INSERT OR REPLACE INTO maker_cryptocurrency (id,name,symbol,logo,description) \
+                VALUES(%s,%s,%s,%s,%s)", [r['id'], r['name'], r['symbol'], logo, r['description']] )
+        print(' - No.', cnt, ' coin ', r['id'], ': ', r['symbol'], ' inserted.')
+        cnt += 1
 
 '''
     The utility calculator with formula from learning. -- Song
 '''
 def value_maker(volume, supply, privacy, price):
-    utility = (volume / supply) * math.log10(privacy + 1) / price   # formula by intuition
+    if price > 0:
+        utility = (volume / supply) * math.log10(privacy + 1) / price   # formula by intuition
+    else: utility = volume / supply * math.log10(privacy + 1)
     return utility

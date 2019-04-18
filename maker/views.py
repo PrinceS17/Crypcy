@@ -114,3 +114,16 @@ def get_news(request, word):
     res_json = json.dumps(res)
     return HttpResponse(res_json)
 
+def all_history(request):
+    print('\n\ninserting all history...')
+    insert_all_history()
+    return HttpResponse('All history inserted!')
+
+    # print('\n\npatch: repairing volume...')
+    # insert_all_volume()
+    # return HttpResponse('All volume repaired...')
+
+def all_coin(request):
+    print('\n\nupdating all coins...')
+    insert_all_coin()
+    return HttpResponse('All coins inserted!')

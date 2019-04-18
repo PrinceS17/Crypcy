@@ -159,9 +159,9 @@ AUTH_USER_MODEL = 'users.CustomUser'
 # allow all domains
 CORS_ORIGIN_ALLOW_ALL = True
 
-CORS_ORIGIN_WHITELIST = (
-    'http://127.0.0.1:8000',
-    'http://0.0.0.0:8000',
+CORS_ALLOW_CREDENTIALS = True
+CORS_EXPOSE_HEADERS = (
+    'Access-Control-Allow-Origin: *',
 )
 
 # stack overflow version

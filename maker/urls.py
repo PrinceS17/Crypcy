@@ -4,6 +4,9 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('hist/', views.all_history, name='history'),
+    path('allcoin/', views.all_coin, name='all coin'),
+
     re_path(r'^get/(?P<name>.+)/$', views.get_currency, name='gets'),
     re_path(r'^search-coin/(?P<name>.+)/$', views.get_best_currency, name='interesting1'),
     re_path(r'^search-news/(?P<word>.+)/$', views.get_news, name='interesting2'),

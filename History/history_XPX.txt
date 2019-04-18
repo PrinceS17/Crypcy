@@ -1,0 +1,1 @@
+{"Response":"Error","Message":"There is no data for the symbol XPX .","HasWarning":false,"Type":2,"RateLimit":{},"Data":{},"ParamWithError":"fsym"}
