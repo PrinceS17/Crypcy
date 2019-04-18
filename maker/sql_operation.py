@@ -257,3 +257,25 @@ def load_news():
 
     for i in range(5):
         update_news(tags[i], ttype[i], picture[i], content[i], '')
+
+'''
+    Update historical data and write to Cache for given coin. 
+    From crypto compare here. --Song
+'''
+def load_history(sym):
+    api_key = '9e60336ab74b49376ab8d19a2897ad5a23b9235edb1751ebd60cfdec3769f203'
+    url = 'https://min-api.cryptocompare.com/data/histohour?fsym=%s&tsym=USD&limit=1000&api_key=%s' % (sym, api_key)
+
+    session = Session()
+    try:
+        response = session.get(url)
+        data = json.loads(response.text)
+
+
+
+        
+    
+    except (ConnectionError, Timeout, TooManyRedirects) as e:
+        print(e)
+        return 0
+        
