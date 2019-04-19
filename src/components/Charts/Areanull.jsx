@@ -20,10 +20,13 @@ import DataSet from "@antv/data-set";
 
 class Areanull extends React.Component {
   render() {
+    console.log("Arena");
+    console.log(this.props.data);
     let sche = this.props.schema;
     if(!this.props.data)  return (<div></div>);
     let fie = [];
     fie.push(this.props.schema);
+    if(this.props.schema =='price') fie.push('Price Prediction');
     var dv = new DataSet.View().source(this.props.data);
     dv.transform({
       type: "fold",
@@ -50,16 +53,11 @@ class Areanull extends React.Component {
     };
     return (
           <Chart
-            // height={window.innerHeight}
             data={dv}
             padding={"auto"}
             scale={scale}
             forceFit
-            style={{zIndex: -2}}
-            // width={window.innerWidth/1.5}
-            //width={"50%"}
-            // height={320}
-            // style={{position:'absolute', left:" 50%", transform:'translateX(-50%)'}}
+            style={{zIndex: -2, marginBottom:'50px'}}
           >
             <Tooltip crosshairs />
             

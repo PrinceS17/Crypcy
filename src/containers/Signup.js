@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form, Input, Icon, Button, Radio, Alert } from 'antd';
 import { connect } from 'react-redux';
-import { NavLink } from 'react-router-dom';
+import { NavLink, withRouter } from 'react-router-dom';
 import * as actions from '../store/actions/auth';
 import ErrorCard from '../utilities/ErrorCard'
 
@@ -84,7 +84,7 @@ class RegistrationForm extends React.Component {
                 <div>
                      {errorMessage}
                     <Form onSubmit={this.handleSubmit} style={{width: "480px"}}>
-                    <h1>Sign Up</h1>
+                    <h1 style={{borderBottom: '2px solid'}}>Sign Up</h1>
                     <FormItem>
                         {getFieldDecorator('userName', {
                             rules: [{ required: true, message: 'Please input your username!' }],
@@ -137,13 +137,13 @@ class RegistrationForm extends React.Component {
                     </FormItem>
 
                     <Form.Item label="Interest tag">
-                        {getFieldDecorator('interest')(
-                            <Radio.Group>
-                                <Radio.Button value="Low">Low</Radio.Button>
-                                <Radio.Button value="Medium">Medium</Radio.Button>
-                                <Radio.Button value="High">High</Radio.Button>
-                            </Radio.Group>
-                        )}
+                    {getFieldDecorator('interest')(
+                        <Radio.Group>
+                            <Radio.Button value="Low">Low</Radio.Button>
+                            <Radio.Button value="Moderate">Moderate</Radio.Button>
+                            <Radio.Button value="High">High</Radio.Button>
+                        </Radio.Group>
+                    )}
                     </Form.Item>
 
                     <FormItem>

@@ -65,7 +65,7 @@ componentDidMount(){
                         :
 
                         <Form onSubmit={this.handleSubmit} className="login-form">
-                            <h1>Log In</h1>
+                            <h1 style={{borderBottom: '2px solid'}}>Log In</h1>
                             <FormItem style={{width: '480px'}}>
                             {getFieldDecorator('userName', {
                                 rules: [{ required: true, message: 'Please input your username!' }],

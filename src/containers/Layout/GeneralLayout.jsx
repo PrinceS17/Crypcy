@@ -11,11 +11,11 @@ import axios from 'axios';
 import SearchBar from "../../components/SearchBar/SearchBar"
 
 
-const { SubMenu } = Menu;
+const SubMenu = Menu.SubMenu;
 
 const {Header, Content, Footer, Sider} = Layout;
 
-
+const MenuItemGroup = Menu.ItemGroup;
 
 class GeneralLayout extends Component{
   constructor(props){
@@ -45,9 +45,7 @@ class GeneralLayout extends Component{
       cS['results'] = cR;
       console.log(cS);
 
-      //TODO: Get News
 
-      //Concat Currs and News
       let source = {};
       source['Cryptocurrency'] = cS;
       source['News'] = {'name': 'News', 'results': []}
@@ -55,7 +53,19 @@ class GeneralLayout extends Component{
         source: source,
       });
     });
+    
+    var rcmdUpdateInterval = setInterval(this.fetchRcmds, 25000);
+    this.setState({intervalId: rcmdUpdateInterval});
+    this.props.getAcurs();
+    // var favUpdateInterval = setInterval(this.fetchFavs, 20000);
+    // this.setState({intervalId1: favUpdateInterval});
   }
+
+  componentWillUnmount(){
+    clearInterval(this.state.intervalId);
+    // clearInterval(this.state.intervalId1);
+  }
+
 
   handleLogout = (e) => {
     this.props.logout();
@@ -64,6 +74,21 @@ class GeneralLayout extends Component{
   handleLogin = (e) => {
     this.props.history.push('/login');
   }
+
+  fetchRcmds = (e)=>{
+    console.log(this.props.loguser);
+    if(this.props.loguser){
+    this.props.getrcmd(this.props.loguser);
+    this.props.history.push(this.props.location.pathname);
+    }
+  }
+  fetchFavs = (e)=>{
+    console.log(this.props.loguser);
+    this.props.getfav(this.props.loguser);
+    this.props.history.push(this.props.location.pathname);
+  }
+
+
   render(){
     const menuLoggedIn = (
       <Menu>
@@ -72,42 +97,53 @@ class GeneralLayout extends Component{
         <Menu.Item key="logout" onClick={this.handleLogout}>Log out</Menu.Item>
       </Menu>
     );
+    
 
-    const menuText = (
-        this.props.isAuthenticated ? this.props.loguser : <p></p>
-        // <div style={{ lineHeight: '64px', float: 'right', color: 'white', margin: "0 20px"}}>Welcome! {this.props.loguser}</div> 
-        // :
-        // <div style={{ lineHeight: '64px', float: 'right', color: 'white', margin: "0 20px"}}></div>
-      
-    );
 
     let sideMenu = '';
+    let rcmdItems='';
     if(this.props.isAuthenticated){
+      if(this.props.rcmd){
+        rcmdItems = this.props.rcmd.map((r)=>{
+          return (
+            <Menu.Item key={r.cid}><Link to={`/currency/${r.cid}`}><img src={r.logo}/> {r.name}</Link></Menu.Item>
+          );
+        })
+      }
+    let favItems='';
+    if(this.props.isAuthenticated && this.props.curProject){
+      console.log(this.props.curProject);
+      if(this.props.fav){
+        favItems = this.props.fav.map((f)=>{
+          return (
+            <Menu.Item key={f}><Link to={`/currency/${f}`}><img src={this.props.curProject[f].logo}/> {this.props.curProject[f].name}</Link></Menu.Item>
+            // <Menu.Item key={f}>{f}</Menu.Item>
+          );
+        })
+      }
+    }
       sideMenu = (
         <div>
           <Sider width={300}  style={{ background: '#fff', top: '60px'}}>
           <Menu
-
-            mode="inline"
-            defaultSelectedKeys={['1']}
+            
+            defaultOpenKeys={['fav']}
             style={{ position: 'fixed', width:'300px' }}
+            mode="inline"
           >
             <Menu.Item key="logout" onClick={this.handleLogout} style={{color:'red'}}><Icon type="logout" />Log out</Menu.Item>
             <Menu.Item key="list"><Link to='/list'><Icon type="dollar" theme="twoTone"/> Cryptocurrency List</Link></Menu.Item>
-            <Menu.Item key="profile"><Icon type="smile" theme="twoTone" twoToneColor="#00bb00"/> Profile</Menu.Item>
+            <Menu.Item key="profile"><Link to={`/profile/${this.props.loguser}`}><Icon type="smile" theme="twoTone" twoToneColor="#00bb00"/> Profile</Link></Menu.Item>
 
-            <SubMenu key="fav" title={<span><Icon type="star"  theme="twoTone" twoToneColor="#daa520"/>Favorites</span>}>
-              <Menu.Item key="5">option5</Menu.Item>
-              <Menu.Item key="6">option6</Menu.Item>
-              <Menu.Item key="7">option7</Menu.Item>
-              <Menu.Item key="8">option8</Menu.Item>
+
+
+            <SubMenu key="fav" title={<span><Icon type="star"  theme="twoTone" twoToneColor="#daa520"/>&nbsp;&nbsp;Favorites</span>}>
+            {favItems}
             </SubMenu>
-            <SubMenu key="recomm" title={<span><Icon type="like" theme="twoTone" twoToneColor="#eb2f96" />Recommendations</span>}>
-              <Menu.Item key="9">option9</Menu.Item>
-              <Menu.Item key="10">option10</Menu.Item>
-              <Menu.Item key="11">option11</Menu.Item>
-              <Menu.Item key="12">option12</Menu.Item>
-            </SubMenu>
+
+            <MenuItemGroup  key="recomm" title={<span><Icon type="like" theme="twoTone" twoToneColor="#eb2f96" />&nbsp;&nbsp;Recommendations</span>}>
+              {rcmdItems}
+            </MenuItemGroup >
           </Menu>
         </Sider>
         </div>
@@ -141,7 +177,7 @@ class GeneralLayout extends Component{
             
 
               <Link to="/">
-              <img src = {CrypcyLogo} style={{height: '64px', top: '-8px', position:'relative'}}/>
+              <img src = {CrypcyLogo} style={{height: '64px', top: '-4px', position:'relative'}}/>
               </Link>
               <div className = "SearchBar">
               <SearchBar  source={this.state.source}/>
@@ -199,7 +235,7 @@ class GeneralLayout extends Component{
               
             
             <Footer style={{ textAlign: 'center', position: 'fixed', bottom: '0', width: '100%', height: '36px' , padding: '5px'}}>
-              Design ©2018 Powered By TEAM 42
+              Design ©2019 Powered By TEAM 42
             </Footer>
         </Layout>
       )
@@ -208,7 +244,10 @@ class GeneralLayout extends Component{
 
 const mapStateToProps = (state) => {
   return {
-      loguser: state.loguser
+      loguser: state.loguser,
+      rcmd: state.rcmd,
+      fav: state.fav,
+      curProject: state.allCurrency,
   }
 }
 
@@ -217,7 +256,14 @@ const mapDispatchToProps = dispatch => {
   return {
       logout: () => {
         dispatch(actions.logout());
-      }
+      },
+      getrcmd: (username)=>{
+        dispatch(actions.getRcmd(username))
+      },
+      getfav: (username)=>{
+        dispatch(actions.getFav(username))
+      },
+      getAcurs: ()=>{dispatch(actions.onMount())}
   }
 }
 

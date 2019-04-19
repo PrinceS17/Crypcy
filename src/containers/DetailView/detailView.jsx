@@ -1,10 +1,12 @@
 import React, { Component } from 'react'
 import axios from "axios";
 import { Card, Icon, Avatar, Button, Form, Radio, Col, Row } from 'antd';
-import {Link, NavLink} from 'react-router-dom'
+import {Link, NavLink, withRouter} from 'react-router-dom'
 import styles from './detailView.css'
 import Areanull from "../../components/Charts/Areanull.jsx"
 import { string } from 'prop-types';
+import {connect} from 'react-redux'
+import * as actions from '../../store/actions/auth'
 
 const { Meta } = Card;
 
@@ -14,6 +16,7 @@ class DetailView extends Component{
         super(props);
         this.state={
             metrics: null,
+            predicted: null,
             schema: "",
             outData: [],
 
@@ -24,15 +27,20 @@ class DetailView extends Component{
 
     fetchMetrics(){
         const detailID = this.props.match.params.ix;
+        
         const metricURL = `http://34.216.221.19:8000/maker/basic/detail?id=${detailID}`;
         axios.get(metricURL)
         .then((res)=>{
+            let resData = res.data;
+            const preData = resData.shift();
             this.setState({
-                metrics: res.data
+                metrics: resData,
+                predicted: preData['prediction'],
+                 
             });
             if(!this.state.schema) this.setPlotData("price");
-            document.title = "Detail | " + res.data[0].name;
-            console.log(res.data);
+            document.title = "Detail | " + res.data[1].name;
+            console.log(preData);
         }).catch((err)=>{
             console.log(err);
         });
@@ -46,46 +54,71 @@ class DetailView extends Component{
         this.setState({intervalId: detailFetchInterval});
         
     }
-
+    componentWillUnmount(){
+        clearInterval(this.state.intervalId);
+    }
     setPlotData(type='price'){
         if(type===this.state.schema) return;
         if(!this.state.metrics) return;
         let outdata = [];
         outdata = this.state.metrics.map((metric, idx)=>{
             let newmtr = {};
-            const timeslot = parseInt(metric.time, 10) * 1000;
-            const a = new Date(timeslot);
+            let timeslot = parseInt(metric.time, 10) * 1000;
+            let a = new Date(timeslot);
             var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
             var year = a.getFullYear();
             var month = months[a.getMonth()];
             var date = a.getDate();
-            var hour = a.getHours();
-            var min = a.getMinutes();
-            var sec = a.getSeconds();
             var time = date + ' ' + month + ' ' + year;
 
             newmtr['time'] = time;
             newmtr[type] = metric[type];
+            if(idx==0) newmtr['Price Prediction'] = metric[type];
             return newmtr;
+            
         });
+        let currData = outdata[0];
+        
         outdata = outdata.reverse();
         this.setState({
             schema: type,
             outData: outdata
         });
+        
+        if(type==='price'){
+            let currData1 = {};
+            currData1['time'] = currData['time'];
+            currData1['Price Precition'] = currData['price'];
+            // outdata.push(currData1);
+            const currTime = this.state.metrics[0].time;
+            for(let i=0;i<5;i++){
+                let newmtr = {};
+            
+                let timeslot = parseInt(currTime, 10) * 1000 + 1000*24*3600 * (i+1);
+                console.log(timeslot);
+                console.log(timeslot);
+                let a = new Date(timeslot);
+                var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                var year = a.getFullYear();
+                var month = months[a.getMonth()];
+                var date = a.getDate();
+                var time = date + ' ' + month + ' ' + year;
+                newmtr['time'] = time;
+                newmtr['Price Prediction'] = this.state.predicted[i];
+                outdata.push(newmtr);                
+            }
+            this.setState({
+                outData: outdata,
+            });
+        }
     }
 
 
-    componentWillUnmount(){
-        clearInterval(this.state.intervalId);
-    }
+
 
     
     render(){
-        const gridStyle = {
-            width: '50%',
-            textAlign: 'center',
-          };
+
         let details = (
         this.state.metrics? 
             <div className="Details"> 
@@ -112,26 +145,47 @@ class DetailView extends Component{
 
             </div>
             
-                {/* <Card
-                    style={{ width: 300 }}
-                    actions={[<Link to ='/'><Icon type="heart" /></Link>]}
-                >
-                <Meta
-                    avatar={<Avatar src={this.state.metrics[0].logo} />}
-                    title={this.state.metrics[0].name}
-                    description={`Privacy: ${this.state.metrics[0].privacy}`}
-                />
-                </Card> */}
-
             </div>
             :
             <div></div>
         )
         
 
+        
+        let favFlag = 0;
+        if(this.props.fav){
+            console.log(this.pro)
+            let a = this.props.match.params.ix;
+            let b = this.props.fav;
 
+            if(b.indexOf(parseInt(a))>-1) favFlag=1;
+        }
+
+        let butArea = "";
+        if(this.props.loguser){
+            butArea = (
+                favFlag?
+                    <Button onClick={()=>{
+                        let oldFavs = this.props.fav;
+                        let idx = oldFavs.indexOf(parseInt(this.props.match.params.ix));
+                        oldFavs.splice(idx,1);
+                        let retObj = {}
+                        retObj['favorite'] = oldFavs;
+                        this.props.updateFavs(this.props.loguser, retObj);
+                    }} type="danger">Unfavorite</Button>
+                    :
+                    <Button onClick={()=>{
+                        let oldFavs = this.props.fav;
+                        oldFavs.push(parseInt(this.props.match.params.ix));
+                        let retObj = {}
+                        retObj['favorite'] = oldFavs;
+                        this.props.updateFavs(this.props.loguser, retObj);
+                    }} type="primary">Favorite</Button>
+            );
+        }
         return (
             <div>
+                {butArea}
                 <br/>
                 {details} 
                 <br/>
@@ -154,11 +208,10 @@ class DetailView extends Component{
                    <Radio.Group>
                    <Radio.Button onClick={()=>this.setPlotData("price")}>Price</Radio.Button>
                    <Radio.Button onClick={()=>this.setPlotData("volume")}>Volume</Radio.Button>
-                   <Radio.Button onClick={()=>this.setPlotData("utility")}>Utility</Radio.Button>
                    </Radio.Group>                    
                 </Form.Item>
                 </Form>
-                <Areanull schema={this.state.schema} data={this.state.outData} />
+                <Areanull schema={this.state.schema} data={this.state.outData}/>
                 </div>
 
                 <br/>
@@ -170,4 +223,20 @@ class DetailView extends Component{
 
 }
 
-export default DetailView;
+const mapStateToProps = (state) => {
+    return {
+        fav: state.fav,
+        loguser:  state.loguser,
+    }
+  }
+  
+  
+  const mapDispatchToProps = dispatch => {
+    return {
+        updateFavs: (username, updates) =>{
+            dispatch(actions.updateProfile(username, updates))
+        }
+    }
+  }
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(DetailView));

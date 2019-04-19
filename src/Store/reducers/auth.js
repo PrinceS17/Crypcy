@@ -6,7 +6,14 @@ const initialState = {
     error: null, 
     loading: false,
     loguser: null,
-    
+    rcmd: null,
+    fav: null,
+    allCurrency: null,
+}
+const upAllCur = (state, action) => {
+    return updateObject(state, {
+        allCurrency: action.acur,
+    });
 }
 
 const authStart = (state, action) => {
@@ -36,6 +43,8 @@ const authLogout = (state, action) => {
     return updateObject(state, {
         token: null,
         loguser: null,
+        fav: null,
+        rcmd: null,
     });
 }
 
@@ -44,6 +53,19 @@ const authClearError = (state, action)=>{
         error: null,
     });   
 }
+
+const getRcmd = (state, action)=>{
+    return updateObject(state, {
+        rcmd: action.rcmd,
+    });   
+}
+const upFav = (state, action) =>{
+    return updateObject(state, {
+        fav: action.fav,
+    });   
+}
+
+
 const reducer = (state=initialState, action) => {
     switch (action.type) {
         case actionTypes.AUTH_START: return authStart(state, action);
@@ -51,6 +73,9 @@ const reducer = (state=initialState, action) => {
         case actionTypes.AUTH_FAIL: return authFail(state, action);
         case actionTypes.AUTH_LOGOUT: return authLogout(state, action);
         case actionTypes.AUTH_CLEARERROR: return authClearError(state, action);
+        case actionTypes.GET_RCMD: return getRcmd(state, action);
+        case actionTypes.UP_FAV: return upFav(state, action);
+        case actionTypes.All_CUR: return upAllCur(state, action)
         default:
             return state;
     }
