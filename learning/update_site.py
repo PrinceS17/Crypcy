@@ -1,5 +1,6 @@
 import time, datetime, json, sqlite3, math, random, os, sys, inspect
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
+os.environ['DJANGO_SETTINGS_MODULE'] = 'cus_crypcy.settings'    # enable updating the database    
 
 from django.http import HttpResponse
 from django.db import connection
@@ -10,13 +11,14 @@ from requests import Request, Session
 from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
 from threading import Timer
 
-from maker.models import *
-from maker.sql_operation import *
+from tools import *
 from learning import hist_predict
-from maker.basic.SQL_Query import update_utility
+
+blacklist = [2955, 3144, 2335, 2471]
 
 # get the latest data from coin market cap, insert into database, & write into history cache
 def update_all(time=None):
+    global blacklist
     time = timezone.now().timestamp() if time is None else time
     print('Loading latest data ... ')
     d1 = load_data(time)    # 1. load data from coin market cap for insertion, cache.txt updated
@@ -30,6 +32,8 @@ def update_all(time=None):
     
     print('Updating database ...')
     for r in d1:
+        id = r['id']
+        if id in blacklist: continue
         tid = generate_timeslot(time)
         mid = (tid % 1e6) * (id % 1e6)
         supply = r['circulating_supply']
@@ -41,11 +45,17 @@ def update_all(time=None):
                 VALUES(%s,%s,%s,%s,%s,%s,%s,%s)", [mid, volume, privacy, price, supply, id, tid] )
         update_utility(id, sym, price)      # 5. utility updated
 
+ii = 0
 def periodical_update(interval):
-    update_all()
-    update_news_all()
+    # update_all()
+    update_news1()
+    global ii
+    print(ii)
+    ii += 1
     Timer(interval, periodical_update, [interval]).start()
 
 def main():
-    os.environ['DJANGO_SETTINGS_MODULE'] = 'cus_crypcy.settings'    # enable updating the database    
+    periodical_update(5)
 
+if __name__ == "__main__":
+    main()
