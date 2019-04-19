@@ -66,6 +66,10 @@ def currency_advice(request):
     num = int(request.GET.get('num', ''))
     typ = request.GET.get('type', '')
 
+    if username == '': 
+        print('No username!')
+        return HttpResponse('No username!')
+
     # get type of the user
     with connection.cursor() as cursor:
         cursor.execute("SELECT interest_tag AS type FROM users_customuser WHERE username = %s", [username])

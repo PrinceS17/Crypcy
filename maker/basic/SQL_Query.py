@@ -117,7 +117,9 @@ def get_detail(id, name):
     
     # get predictions
     id = res[0]['crypto_currency_id']
-    data = update_utility(id)
+    price = res[0]['price']
+    sym = res[0]['symbol']
+    data = update_utility(id, sym, price)
 
     # interesting internal bug here: no time fetched from sqlite!
     for i in range(len(res)):
@@ -126,17 +128,13 @@ def get_detail(id, name):
 
     return [data] + res
 
-def update_utility(id):
-    with connection.cursor() as cursor:
-        cursor.execute("SELECT symbol FROM maker_cryptocurrency WHERE id = %s", [id])
-        res = dictfetchall(cursor)
-    sym = res[0]['symbol']
+def update_utility(id, sym, price):
     path = os.path.join('learning', 'Predict', 'pred_%s.txt' % sym)
     f = open(path, 'r')
     data = json.loads(f.read())
     f.close()
-
-    utility = data['utility']
+    utility = round(data['utility'] / price * 100.0, 5)
+    data['utility'] = utility
     with connection.cursor() as cursor:
         cursor.execute("UPDATE maker_metric SET utility = %s WHERE crypto_currency_id = %s AND timeslot_id = \
             (SELECT MAX(timeslot_id) FROM maker_metric WHERE crypto_currency_id = %s)", [utility, id, id])

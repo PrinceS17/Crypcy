@@ -1,4 +1,5 @@
 from django.http import HttpResponse
+from django.db import connection
 from requests import Request, Session
 from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
 
@@ -9,7 +10,15 @@ from .SQL_Query import *
 
 
 def index(request):
-    return HttpResponse('Welcome to basic operations!')
+    # update all utility
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT c.id AS id, c.symbol AS sym, m.price FROM maker_cryptocurrency c JOIN maker_metric m WHERE c.id = m.crypto_currency_id \
+                    AND m.timeslot_id = (SELECT MAX(timeslot_id) FROM maker_metric WHERE crypto_currency_id = c.id)")
+        res = dictfetchall(cursor)
+    for r in res:
+        update_utility(r['id'], r['sym'], r['price'])
+
+    return HttpResponse('Welcome to basic operations: utility updated!')
 
 # Begin --Zou
 # remove 1 line of assignment
