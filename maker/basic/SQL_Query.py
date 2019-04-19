@@ -2,7 +2,7 @@
 # @author Ruixin Zou
 # Latest modified: April 15, Song       1) select *;    2) only display the latest results
 
-import sqlite3
+import sqlite3, numpy
 from django.db import connection
 from ..sql_operation import *
 
@@ -114,9 +114,30 @@ def get_detail(id, name):
         WHERE cr.%s = '%s'
         ORDER BY me.timeslot_id DESC ''' % (key, value))
         res = dictfetchall(cursor)
+    
+    # get predictions
+    id = res[0]['crypto_currency_id']
+    data = update_utility(id)
+
     # interesting internal bug here: no time fetched from sqlite!
     for i in range(len(res)):
         if res[i]['time'] is None:
             res[i]['time'] = res[i]['timeslot_id'] * 3600       # a patch here
 
-    return res
+    return [data] + res
+
+def update_utility(id):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT symbol FROM maker_cryptocurrency WHERE id = %s", [id])
+        res = dictfetchall(cursor)
+    sym = res[0]['symbol']
+    path = os.path.join('learning', 'Predict', 'pred_%s.txt' % sym)
+    f = open(path, 'r')
+    data = json.loads(f.read())
+    f.close()
+
+    utility = data['utility']
+    with connection.cursor() as cursor:
+        cursor.execute("UPDATE maker_metric SET utility = %s WHERE crypto_currency_id = %s AND timeslot_id = \
+            (SELECT MAX(timeslot_id) FROM maker_metric WHERE crypto_currency_id = %s)", [utility, id, id])
+    return data

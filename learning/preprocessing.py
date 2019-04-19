@@ -41,10 +41,8 @@ def write_header(file, table, attribute):
 
 # get training data by reading from 2 cache file with t1 & t2
 def generate_training_file(filename, t1, t2):
-    try:
-        os.mkdir('Dataset')
-    except OSError:
-        pass
+    try: os.mkdir('Dataset')
+    except OSError: pass
     else: pass
 
     file = open(filename, 'w')

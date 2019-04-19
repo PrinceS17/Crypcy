@@ -48,8 +48,11 @@ def dictfetchall(cursor):
     risk type (low, moderate, high) and his favorite coins, give our advice on the 
     combination of currencies.
     Advance because it involves the history data analysis and customed combination
-    of currencies based on user's choice and favorites. 1) We calculate the variances
-    of all currencies indicating the type     -- Song
+    of currencies based on user's choice and favorites. 1) We calculate the normalized
+    variances of all currencies indicating the risk level, and match the risk type
+    that the user prefers. 2) We find the user's favorite coins and recommend new coins
+    based on the similarity between them and the favorite ones. The similarity is
+    basically calculated by the standandized supply/volume/utility/variance.    -- Song
 '''
 def currency_advice(request):
     # get parameters from url

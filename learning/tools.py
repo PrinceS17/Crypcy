@@ -73,9 +73,9 @@ def load_data(time=None):
 '''
 def get_data_from_cache(time=None):
     if time is None:
-        cache = open(os.path.join('Cache', 'cache.txt'), 'r')
+        cache = open(os.path.join('..', 'cache.txt'), 'r')
     else:
-        cache = open(os.path.join('Cache', 'cache_%s.txt' % time), 'r')
+        cache = open(os.path.join('..', 'cache_%s.txt' % time), 'r')
     data_all = json.loads(cache.read())
     cache.close()
     return data_all['data']
