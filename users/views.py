@@ -54,8 +54,18 @@ def currency_advice(request):
     # get parameters from url
     username = request.GET.get('username', '')
     num = int(request.GET.get('num', ''))
-    typ = request.GET.get('type', '')
-    print('\n\nusername: ', username, ' num: ', num, ' risk type: ', typ, '\n')
+    # typ = request.GET.get('type', '')
+
+    # get type of the user
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT interest_tag AS type FROM users_customuser WHERE username = %s", [username])
+        res = dictfetchall(cursor)
+    tp = res[0]['type']
+    if tp == 'low' or tp == 'Low': ttag = 0
+    elif tp == 'high' or tp == 'High': ttag = 2
+    else: ttag = 1
+
+    print('\nusername: ', username, ' num: ', num, ' risk type: ', tp, '\n')
 
     # fetch (currency_id, price) for variance calculation
     with connection.cursor() as cursor:
@@ -103,10 +113,6 @@ def currency_advice(request):
             grps[tag] = {id:cur_utility[id]}
         else: grps[tag][id] = cur_utility[id]
         i += 1
-
-    if typ == 'low': ttag = 0
-    elif typ == 'moderate': ttag = 1
-    else: ttag = 2
     
     print('group determined!')
 
