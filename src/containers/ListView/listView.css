@@ -1,0 +1,33 @@
+.List-Container{
+
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%);
+}
+
+.FormGroup{
+    text-align:center;
+}
+.Card{
+    width: 1200px;
+    text-align: center;
+    position: relative;
+}
+.Form{
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.CardContainer{
+    display: flex;
+    justify-content: space-around;
+}
+
+.Spin{
+    position: absolute;
+    left: 50%;
+    top: 400px;
+    transform: translateX(-50%)
+
+    
+}

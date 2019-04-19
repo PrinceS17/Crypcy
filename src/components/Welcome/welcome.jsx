@@ -4,6 +4,9 @@ import { Link } from 'react-router-dom'
 import styles from './welcome.css'
 import Logo from '../../Assets/Images/CrypcyLogo.png'
 class Welcome extends Component{
+    componentDidMount(){
+        document.title = "Welcome to Crypcy";
+    }
     render(){
         return (
             <div className = "Home">

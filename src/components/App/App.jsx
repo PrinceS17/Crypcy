@@ -5,18 +5,21 @@ import 'antd/dist/antd.css';
 import {connect} from 'react-redux';
 import * as actions from "../../store/actions/auth";
 
-import './App.css';
-
-import Welcome from "../Welcome/welcome.jsx";
-import ListView from "../ListView/listView.jsx";
-import DetailView from "../DetailView/detailView.jsx";
-import Adv from "../Advanced/adv.jsx"
-import Signin from "../Auth/signin.jsx"
-import GeneralLayout from '../../containers/Layout/GeneralLayout';
-
+import './App.css'
 
 import Login from "../../containers/Login"
 import Signup from "../../containers/Signup"
+
+import Welcome from "../Welcome/welcome.jsx";
+import GeneralLayout from '../../containers/Layout/GeneralLayout';
+
+import ListView from "../../containers/ListView/listView.jsx";
+import DetailView from "../../containers/DetailView/detailView.jsx";
+
+import Account from "../../containers/Account/Account"
+
+
+
 
 class App extends Component {
   componentDidMount(){
@@ -31,12 +34,12 @@ class App extends Component {
             <Route exact path = "/" component={Welcome} />
             <Route path = "/login" component={Login} />
             <Route path = "/signup" component={Signup} />
+            <Route path = "/account" component={Account} />
             <Route path = "/list" component = {ListView} /> 
-            <Route path="/detail/:ix"  render={(props) => (<DetailView key={props.match.params.ix} {...props} />) }/>
-            <Route path = "/adv" component = {Adv} />
+            <Route path="/currency/:ix"  render={(props) => (<DetailView key={props.match.params.ix} {...props} />) }/>
+            {/* <Route path = "/adv" component = {Adv} /> */}
         </Switch>
       </GeneralLayout>
-
 
       </Router>
     );

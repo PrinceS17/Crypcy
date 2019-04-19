@@ -1,6 +1,6 @@
 import { Table, Button } from 'antd';
 import React from 'react';
-
+import {withRouter} from 'react-router-dom';
 
 class MainTable extends React.Component {
   state = {
@@ -16,27 +16,33 @@ class MainTable extends React.Component {
     });
   }
 
-  clearFilters = () => {
-    this.setState({ filteredInfo: null });
-  }
+  // clearFilters = () => {
+  //   this.setState({ filteredInfo: null });
+  // }
 
-  clearAll = () => {
-    this.setState({
-      filteredInfo: null,
-      sortedInfo: null,
-    });
-  }
+  // clearAll = () => {
+  //   this.setState({
+  //     filteredInfo: null,
+  //     sortedInfo: null,
+  //   });
+  // }
 
-  setAgeSort = () => {
-    this.setState({
-      sortedInfo: {
-        order: 'descend',
-        columnKey: 'age',
-      },
-    });
+  // setAgeSort = () => {
+  //   this.setState({
+  //     sortedInfo: {
+  //       order: 'descend',
+  //       columnKey: 'age',
+  //     },
+  //   });
+  // }
+
+  routeChange(path) {
+    console.log(path);
+    this.props.history.push(path);
   }
 
   render() {
+
     let { sortedInfo, filteredInfo } = this.state;
     sortedInfo = sortedInfo || {};
     filteredInfo = filteredInfo || {};
@@ -45,53 +51,58 @@ class MainTable extends React.Component {
         key: 'logo',
         width: 24,
         render: logo => <img src={logo} style={{height: "28px"}}/>
-      //   filters: [
-      //     { text: 'Joe', value: 'Joe' },
-      //     { text: 'Jim', value: 'Jim' },
-      //   ],
       },
         {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-    //   filters: [
-    //     { text: 'Joe', value: 'Joe' },
-    //     { text: 'Jim', value: 'Jim' },
-    //   ],
-    //   filteredValue: filteredInfo.name || null,
-    //   onFilter: (value, record) => record.name.includes(value),
       sorter: (a, b) => (a.name<b.name?-1:(a.name>b.name?1:0)),
       sortOrder: sortedInfo.columnKey === 'name' && sortedInfo.order,
     }, {
-      title: 'Age',
-      dataIndex: 'age',
-      key: 'age',
-      sorter: (a, b) => a.age - b.age,
-      sortOrder: sortedInfo.columnKey === 'age' && sortedInfo.order,
+      title: 'Price',
+      dataIndex: 'price',
+      key: 'price',
+      sorter: (a, b) => a.price - b.price,
+      sortOrder: sortedInfo.columnKey === 'price' && sortedInfo.order,
     }, {
-      title: 'Address',
-      dataIndex: 'address',
-      key: 'address',
-    //   filters: [
-    //     { text: 'London', value: 'London' },
-    //     { text: 'New York', value: 'New York' },
-    //   ],
-    //   filteredValue: filteredInfo.address || null,
-    //   onFilter: (value, record) => record.address.includes(value),
-      sorter: (a, b) => a.address.length - b.address.length,
-      sortOrder: sortedInfo.columnKey === 'address' && sortedInfo.order,
+      title: 'Supply',
+      dataIndex: 'supply',
+      key: 'supply',
+      sorter: (a, b) => a.supply - b.supply,
+      sortOrder: sortedInfo.columnKey === 'supply' && sortedInfo.order,
+    }, {
+      title: 'Utility',
+      dataIndex: 'utility',
+      key: 'utility',
+      sorter: (a, b) => a.utility - b.utility,
+      sortOrder: sortedInfo.columnKey === 'utility' && sortedInfo.order,
+    }, {
+      title: 'Privacy',
+      dataIndex: 'privacy',
+      key: 'privacy',
+      sorter: (a, b) => a.privacy - b.privacy,
+      sortOrder: sortedInfo.columnKey === 'privacy' && sortedInfo.order,
     }];
+
+
+
     return (
       <div>
         <div className="table-operations">
-          <Button onClick={this.setAgeSort}>Sort age</Button>
+          {/* <Button onClick={this.setAgeSort}>Sort age</Button>
           <Button onClick={this.clearFilters}>Clear filters</Button>
-          <Button onClick={this.clearAll}>Clear filters and sorters</Button>
+          <Button onClick={this.clearAll}>Clear filters and sorters</Button> */}
         </div>
-        <Table columns={columns} dataSource={this.props.data} onChange={this.handleChange} pagination={{defaultPageSize: 120}}/>
+        <Table rowKey="name"  columns={columns} dataSource={this.props.data} onChange={this.handleChange} pagination={{defaultPageSize: 50}}
+              onRow={(record,index)=>{
+                return {
+                  onClick: (event)=>{
+                    this.routeChange(`/currency/${record.crypto_currency_id}/`)
+                  }
+              }}}/>
       </div>
     );
   }
 }
 
-export default MainTable
+export default withRouter(MainTable)

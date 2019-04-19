@@ -1,0 +1,23 @@
+.Detail-Container{
+    position: absolute;
+    /* left: 50%;
+    transform: translate(-50%); */
+}
+
+.Form1{
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 0;
+    margin: -25px 0;
+
+}
+
+.container{
+    border-top: 1px dotted;
+    padding: 10px;
+}
+
+.Details{
+    text-align: center;
+}
