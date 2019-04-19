@@ -8,8 +8,8 @@ Relational Schema: <all IDs and [ , ] are primary keys>
 Crypto-Currency (CurrencyID, Name, Logo)
 Metric ([Crypto-Currency.CurrencyID, Timeslot.SlotID], Volume, Privacy, Price, Circulating Supply, Utility (Value))
 Timeslot (SlotID, Related News. FactID)
-User (UserID, Name, Gender, Password, Interest Tag, Score of Knowledge)
-Log (LogID, IP, Time, User.UserID, Related News.FactID)
+User (UserID, Name, Gender, Password, Interest Tag, Score of Knowledge)     move to custom user model
+Log (LogID, IP, Time, User.UserID, Related News.FactID)                     no use later
 Related News (FactID, Tag, Type, Picture, Content, Author, Slot.SlotID)
 Favorite (Crypto-Currency. CurrencyID, User. UserID)
 

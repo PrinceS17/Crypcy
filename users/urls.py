@@ -1,8 +1,8 @@
-from django.urls import include, path
+from django.urls import include, path, re_path
 
 from . import views
 
 urlpatterns = [
     # path('', views.UserListView.as_view()),
-    path('advice/<int:num>+<type>', views.currency_advice, name="advice"),
+    re_path(r'^advice?.*/$', views.currency_advice, name="advice"),     # extract username, num, type
 ]
