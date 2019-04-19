@@ -7,6 +7,11 @@ from requests import Request, Session
 from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
 from maker.models import *
 
+# from learning import hist_predict
+# # from learning.hist_predict import *
+# from maker.basic.SQL_Query import update_utility
+
+
 import datetime
 import json
 import sqlite3
@@ -250,8 +255,8 @@ def update_currency(mode, **kwargs):
                         VALUES(%s,%s,%s,%s,%s)", [r['id'], r['name'], r['symbol'], logo, r['description']] )
 
                     # here need time slot to determine the metric id
-                    cursor.execute("INSERT OR REPLACE INTO maker_metric (id, volume, privacy, price, supply, utility, crypto_currency_id, timeslot_id) \
-                        VALUES(%s,%s,%s,%s,%s,%s,%s,%s)", [mid, volume, privacy, price, supply, utility, r['id'], tid] )
+                    cursor.execute("INSERT OR REPLACE INTO maker_metric (id, volume, privacy, price, supply, crypto_currency_id, timeslot_id) \
+                        VALUES(%s,%s,%s,%s,%s,%s,%s,%s)", [mid, volume, privacy, price, supply, r['id'], tid] )
 
 '''
     Load related news from manually collected file. -- Song
@@ -273,6 +278,27 @@ def load_news():
 
     for i in range(5):
         update_news(tags[i], ttype[i], picture[i], content[i], '')
+
+
+# only load history to cache but not the database   (200 is currently hardcoded)
+def load_history_to_cache(id, sym):
+    # get history of symbol from crypto compare API
+    api_key = '9e60336ab74b49376ab8d19a2897ad5a23b9235edb1751ebd60cfdec3769f203'
+    url = 'https://min-api.cryptocompare.com/data/histoday?fsym=%s&tsym=USD&limit=200&api_key=%s' % (sym, api_key)
+
+    session = Session()
+    try:
+        response = session.get(url)
+        data = json.loads(response.text)
+        path = os.path.join('History', 'history_%s.txt' % sym)
+        cache = open(path, 'w')
+        cache.write(response.text)
+        cache.close()
+        return data['Data']
+    except (ConnectionError, Timeout, TooManyRedirects) as e:
+        print(e)
+        return 0
+
 
 '''
     Update historical data and write to Cache for given coin. 
@@ -309,11 +335,11 @@ def load_history(id, sym, supply):
         if volume_24h == 0: continue
         price = r['open']
         privacy = 8.0
-        utility = value_maker(volume_24h, supply, privacy, price)
+        # utility = value_maker(volume_24h, supply, privacy, price)
 
         with connection.cursor() as cursor:
-            cursor.execute("INSERT OR REPLACE INTO maker_metric (id, volume, privacy, price, supply, utility, crypto_currency_id, timeslot_id) \
-                        VALUES(%s,%s,%s,%s,%s,%s,%s,%s)", [mid, volume_24h, privacy, price, supply, utility, id, tid] )
+            cursor.execute("INSERT OR REPLACE INTO maker_metric (id, volume, privacy, price, supply, crypto_currency_id, timeslot_id) \
+                        VALUES(%s,%s,%s,%s,%s,%s,%s,%s)", [mid, volume_24h, privacy, price, supply, id, tid] )
     
     cache.close()
 

@@ -9,12 +9,12 @@ import sqlite3
 
 from .sql_operation import *
 from .complicated_sql import *
+from threading import Timer
 
 # dependent of advance function 1
 import numpy
 import collections
 import operator
-
 
 def index(request):
     mode = ['load', 'get', 'no', 'yes']     # [load/get data, get/make timeslot, delete?, load news?]
