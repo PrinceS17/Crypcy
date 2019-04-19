@@ -44,26 +44,30 @@ def dictfetchall(cursor):
 
 '''
     Advance function 1: 
-    Based the total number of coin that user wants, his interested investment 
+    Based on the total number of coin that user wants, his interested investment 
     risk type (low, moderate, high) and his favorite coins, give our advice on the 
     combination of currencies.
     Advance because it involves the history data analysis and customed combination
-    of currencies based on user's choice and favorites.      -- Song
+    of currencies based on user's choice and favorites. 1) We calculate the variances
+    of all currencies indicating the type     -- Song
 '''
 def currency_advice(request):
     # get parameters from url
     username = request.GET.get('username', '')
     num = int(request.GET.get('num', ''))
-    # typ = request.GET.get('type', '')
+    typ = request.GET.get('type', '')
 
     # get type of the user
     with connection.cursor() as cursor:
         cursor.execute("SELECT interest_tag AS type FROM users_customuser WHERE username = %s", [username])
         res = dictfetchall(cursor)
-    tp = res[0]['type']
+    tp = res[0]['type'] if typ == '' else typ
+
     if tp == 'low' or tp == 'Low': ttag = 0
     elif tp == 'high' or tp == 'High': ttag = 2
-    else: ttag = 1
+    else: 
+        ttag = 1
+        tp = 'moderate(default)'
 
     print('\nusername: ', username, ' num: ', num, ' risk type: ', tp, '\n')
 
@@ -79,7 +83,10 @@ def currency_advice(request):
         else: prices[e['id']] += [ e['price'] ]
     
     for id in prices:
-        variance[id] = numpy.var(prices[id])
+        v_min = min(prices[id])
+        v_max = max(prices[id])
+        norm_price = [ (a - v_min) / (v_max - v_min) for a in prices[id] ]
+        variance[id] = numpy.var(norm_price)
     variance = sort_dict(variance, False)           # ASC
     print('variance sorted!')
     f1 = open('variance_cache.txt', 'w')
