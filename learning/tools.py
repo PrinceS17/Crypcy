@@ -121,7 +121,7 @@ def load_history_to_cache(id, sym):
     try:
         response = session.get(url)
         data = json.loads(response.text)
-        path = os.path.join('History', 'history_%s.txt' % sym)
+        path = os.path.join('..', 'History', 'history_%s.txt' % sym)
         cache = open(path, 'w')
         cache.write(response.text)
         cache.close()
@@ -131,8 +131,12 @@ def load_history_to_cache(id, sym):
         return 0
 
 def update_utility(id, sym, price):
-    path = os.path.join('learning', 'Predict', 'pred_%s.txt' % sym)
-    f = open(path, 'r')
+    path = os.path.join('Predict', 'pred_%s.txt' % sym)
+    try:
+        f = open(path, 'r')
+    except:
+        print('Cannot open ', path)
+        return    
     data = json.loads(f.read())
     f.close()
     utility = round(data['utility'] / price * 100.0, 5)
