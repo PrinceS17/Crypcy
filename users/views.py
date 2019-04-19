@@ -32,6 +32,12 @@ class CustomDetailView(RetrieveUpdateAPIView):
     serializer_class = UserSerializer
     permission_classes = (permissions.IsAuthenticated, )
 
+class CustomProfileView(RetrieveUpdateAPIView):
+    queryset = models.CustomUser.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (permissions.AllowAny, )
+    lookup_field = 'username'
+
 
 def dictfetchall(cursor):
     "Return all rows from a cursor as a dict"

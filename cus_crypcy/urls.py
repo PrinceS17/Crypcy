@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path, re_path
-from users.views import CustomRegistrationView, CustomDetailView
+from users.views import CustomRegistrationView, CustomDetailView, CustomProfileView
 from allauth.account.views import ConfirmEmailView
 
 urlpatterns = [
@@ -29,5 +29,6 @@ urlpatterns = [
     path('users/', include('users.urls')),        # dirty solution to use advice (adv func 1)
 
     path('maker/', include('maker.urls')),
-    path('api/', include('maker.api.urls')),
+    re_path(r'^profile/(?P<username>[0-9A-Za-z_\-]+)/$', CustomProfileView.as_view(), name='profile')
+    # path('api/', include('maker.api.urls')),
 ]
