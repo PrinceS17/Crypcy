@@ -66,7 +66,7 @@ def currency_advice(request):
     num = int(request.GET.get('num', ''))
     typ = request.GET.get('type', '')
 
-    if username == '': 
+    if not username: 
         print('No username!')
         return HttpResponse('No username!')
 
