@@ -74,7 +74,9 @@ def currency_advice(request):
     with connection.cursor() as cursor:
         cursor.execute("SELECT interest_tag AS type FROM users_customuser WHERE username = %s", [username])
         res = dictfetchall(cursor)
-    tp = res[0]['type'] if typ == '' else typ
+    if typ == '':
+        tp = res[0]['type']
+    else: tp = typ
 
     if tp == 'low' or tp == 'Low': ttag = 0
     elif tp == 'high' or tp == 'High': ttag = 2
