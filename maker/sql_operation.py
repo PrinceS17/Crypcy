@@ -338,8 +338,8 @@ def load_history(id, sym, supply):
         # utility = value_maker(volume_24h, supply, privacy, price)
 
         with connection.cursor() as cursor:
-            cursor.execute("INSERT OR REPLACE INTO maker_metric (id, volume, privacy, price, supply, crypto_currency_id, timeslot_id) \
-                        VALUES(%s,%s,%s,%s,%s,%s,%s,%s)", [mid, volume_24h, privacy, price, supply, id, tid] )
+            cursor.execute("INSERT OR REPLACE INTO maker_metric (id, volume, privacy, price, supply, utility, crypto_currency_id, timeslot_id) \
+                        VALUES(%s,%s,%s,%s,%s,%s,%s,%s)", [mid, volume_24h, privacy, price, supply, 0.01, id, tid] )
     
     cache.close()
 
