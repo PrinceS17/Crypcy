@@ -95,8 +95,8 @@ class RegistrationForm extends React.Component {
                     <Form.Item label="Gender">
                         {getFieldDecorator('gender')(
                             <Radio.Group>
-                            <Radio value="male">Male</Radio>
-                            <Radio value="female">Female</Radio>
+                            <Radio value="Male">Male</Radio>
+                            <Radio value="Female">Female</Radio>
                             </Radio.Group>
                         )}
                     </Form.Item>

@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { InputNumber, Button, Card, Spin } from 'antd';
 import {Form} from 'semantic-ui-react'
+import {connect} from 'react-redux'
 
 import axios from 'axios'
 import styles from './listView.css'
@@ -21,6 +22,7 @@ class ListView extends Component{
             utilLow: 0,
             utilHigh: 100000,
             isloading: false,
+            filtered: false,
         };
         this.fetchList = this.fetchList.bind(this);
         this.clearAllFilter = this.clearAllFilter.bind(this);
@@ -29,7 +31,7 @@ class ListView extends Component{
     }
 
     componentDidMount(){
-        this.fetchList();
+        // this.fetchList();
         document.title = "Cryptocurrency List";
     }
 
@@ -44,7 +46,6 @@ class ListView extends Component{
                 collection: res.data,
                 isloading: false,
             });
-            
         })
     }
 
@@ -54,6 +55,7 @@ class ListView extends Component{
             priceHigh: 100000,
             utilLow: 0,
             utilHigh: 100000,
+            filtered: false,
         });
         this.fetchList();
 
@@ -61,6 +63,9 @@ class ListView extends Component{
 
     handleSubmit = ()=>{
         this.fetchList();
+        this.setState({
+            filtered: true,
+        })
     }
 
     handleChange = (e, { name, value }) => this.setState({ [name]: value });
@@ -90,21 +95,6 @@ class ListView extends Component{
                         </Form.Group>
                     </Form>
 
-{/* 
-                    <Form.Group inline widths='equal' className = "FormGroup" >
-                        Price from
-                        <input placeholder='Low Price' name="lp" onChange={this.filterChange} style={{margin: "8px"}}/>
-                        to
-                        <input placeholder='High Price' name='hp' onChange={this.filterChange} style={{ margin: "8px 36px 8px 8px"}}/>
-
-                        Utility from
-                        <input placeholder='Low Utility' name='lu' onChange={this.filterChange} style={{margin: "8px 8px 8px 8px"}}/>
-                        to
-                        <input  placeholder='High Utility' name='hu' onChange={this.filterChange} style={{ margin: "8px"}}/>
-                        <Button type="primary" style={{margin:'0 8px'} } onClick={this.handleSubmit}> Filter </Button>
-                        <Button type="danger" style={{margin:'0 8px'}} onClick={this.clearAllFilter}> Clear </Button>
-                    </Form.Group> */}
-                    
 
                     </Card>
 
@@ -113,12 +103,11 @@ class ListView extends Component{
 
 
                 {
-                    (this.state.collection && this.state.collection.length>0 && this.state.isloading===false)?
-                    
+                    // (this.props.CurrencyList && this.props.CurrencyList.length>0)?
+                    (this.state.filtered && this.state.collection.length > 0)?
                     <MainTable data = {this.state.collection} detailURL = '../detail/' />
                     :
-                    <Spin size="large" tip="Fetching Data" className="Spin"/>
-                    
+                    <MainTable data = {this.props.CurrencyList} detailURL = '../detail/' />
                 }
 
                  
@@ -128,4 +117,12 @@ class ListView extends Component{
     }
 }
 
-export default ListView;
+
+
+const mapStateToProps = (state) => {
+    return {
+        CurrencyList: state.CurrencyList,
+    }
+  }
+
+export default connect(mapStateToProps, null)(ListView);

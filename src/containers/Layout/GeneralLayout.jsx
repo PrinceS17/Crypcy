@@ -53,16 +53,18 @@ class GeneralLayout extends Component{
         source: source,
       });
     });
+
+    this.fetchRcmds();
     
-    var rcmdUpdateInterval = setInterval(this.fetchRcmds, 25000);
-    this.setState({intervalId: rcmdUpdateInterval});
+    // var rcmdUpdateInterval = setInterval(this.fetchRcmds, 25000);
+    // this.setState({intervalId: rcmdUpdateInterval});
     this.props.getAcurs();
     // var favUpdateInterval = setInterval(this.fetchFavs, 20000);
     // this.setState({intervalId1: favUpdateInterval});
   }
 
   componentWillUnmount(){
-    clearInterval(this.state.intervalId);
+    // clearInterval(this.state.intervalId);
     // clearInterval(this.state.intervalId1);
   }
 
@@ -99,7 +101,6 @@ class GeneralLayout extends Component{
     );
     
 
-
     let sideMenu = '';
     let rcmdItems='';
     if(this.props.isAuthenticated){
@@ -127,7 +128,7 @@ class GeneralLayout extends Component{
           <Sider width={300}  style={{ background: '#fff', top: '60px'}}>
           <Menu
             
-            defaultOpenKeys={['fav']}
+            openKeys={['fav']}
             style={{ position: 'fixed', width:'300px' }}
             mode="inline"
           >

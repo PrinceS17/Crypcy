@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import axios from "axios";
-import { Card, Icon, Avatar, Button, Form, Radio, Col, Row } from 'antd';
+import { Card, Icon, Avatar, Button, Form, Radio, Col, Row, notification } from 'antd';
 import {Link, NavLink, withRouter} from 'react-router-dom'
 import styles from './detailView.css'
 import Areanull from "../../components/Charts/Areanull.jsx"
@@ -48,9 +48,9 @@ class DetailView extends Component{
     }
     componentDidMount(){
         this.fetchMetrics();
-        var detailFetchInterval = setInterval(this.fetchMetrics, 100000);
+        var detailFetchInterval = setInterval(this.fetchMetrics, 300000);
         this.setState({intervalId: detailFetchInterval});
-        var detailFetchInterval = setInterval(this.fetchMetrics, 100000);
+        var detailFetchInterval = setInterval(this.fetchMetrics, 300000);
         this.setState({intervalId: detailFetchInterval});
         
     }
@@ -123,7 +123,7 @@ class DetailView extends Component{
         this.state.metrics? 
             <div className="Details"> 
                 <span><h1><img src={this.state.metrics[0].logo}/>    {this.state.metrics[0].name}</h1> </span>
-
+                <span style={{margin: 30}}><h2>{`(${this.state.metrics[0].symbol})`}</h2></span>
                 <div style={{ padding: '30px' }}>
                 <Row gutter={16} type="flex" style={{textAlign:'center'}} justify="center">
                 <Col span={8}>
@@ -172,6 +172,11 @@ class DetailView extends Component{
                         let retObj = {}
                         retObj['favorite'] = oldFavs;
                         this.props.updateFavs(this.props.loguser, retObj);
+                        notification['success']({
+                            message: 'Unfavorite Success',
+                            description: 'The recommendation list will be updated soon on the side bar.',
+                          });
+                          
                     }} type="danger">Unfavorite</Button>
                     :
                     <Button onClick={()=>{
@@ -180,6 +185,10 @@ class DetailView extends Component{
                         let retObj = {}
                         retObj['favorite'] = oldFavs;
                         this.props.updateFavs(this.props.loguser, retObj);
+                        notification['success']({
+                            message: 'Favorite Success',
+                            description: 'The recommendation list will be updated soon on the side bar.',
+                          });
                     }} type="primary">Favorite</Button>
             );
         }

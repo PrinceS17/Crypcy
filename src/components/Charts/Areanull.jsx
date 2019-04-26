@@ -56,8 +56,10 @@ class Areanull extends React.Component {
             data={dv}
             padding={"auto"}
             scale={scale}
-            forceFit
+            
             style={{zIndex: -2, marginBottom:'50px'}}
+            height={400}
+            width={1000}
           >
             <Tooltip crosshairs />
             

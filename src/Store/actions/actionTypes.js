@@ -6,4 +6,5 @@ export const AUTH_CLEARERROR = 'AUTH_CLEARERROR';
 export const GET_RCMD = 'GET_RCMD';
 export const UP_FAV = 'UP_FAV';
 export const All_CUR = 'ALL_CUR';
+export const STORE_PROFILE = 'STORE_PROFILE'
 

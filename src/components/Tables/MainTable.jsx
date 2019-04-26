@@ -16,25 +16,6 @@ class MainTable extends React.Component {
     });
   }
 
-  // clearFilters = () => {
-  //   this.setState({ filteredInfo: null });
-  // }
-
-  // clearAll = () => {
-  //   this.setState({
-  //     filteredInfo: null,
-  //     sortedInfo: null,
-  //   });
-  // }
-
-  // setAgeSort = () => {
-  //   this.setState({
-  //     sortedInfo: {
-  //       order: 'descend',
-  //       columnKey: 'age',
-  //     },
-  //   });
-  // }
 
   routeChange(path) {
     console.log(path);
@@ -51,6 +32,13 @@ class MainTable extends React.Component {
         key: 'logo',
         width: 24,
         render: logo => <img src={logo} style={{height: "28px"}}/>
+      },
+      {
+        title: 'Symbol',
+        dataIndex: 'symbol',
+        key: 'symbol',
+        sorter: (a, b) => (a.symbol<b.symbol?-1:(a.symbol>b.symbol?1:0)),
+        sortOrder: sortedInfo.columnKey === 'symbol' && sortedInfo.order,
       },
         {
       title: 'Name',

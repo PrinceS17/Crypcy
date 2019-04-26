@@ -9,12 +9,18 @@ const initialState = {
     rcmd: null,
     fav: null,
     allCurrency: null,
+    CurrencyList: null,
 }
 const upAllCur = (state, action) => {
+    console.log(action);
+    console.log("resData");
     return updateObject(state, {
         allCurrency: action.acur,
+        CurrencyList: action.resData,
     });
 }
+
+
 
 const authStart = (state, action) => {
     return updateObject(state, {
@@ -45,6 +51,9 @@ const authLogout = (state, action) => {
         loguser: null,
         fav: null,
         rcmd: null,
+        fav: null,
+        allCurrency: null,
+        CurrencyList: null,
     });
 }
 
@@ -65,7 +74,11 @@ const upFav = (state, action) =>{
     });   
 }
 
-
+const storeProfile = (state, action) =>{
+    return updateObject(state, {
+        Profile: action.profile
+    })
+}
 const reducer = (state=initialState, action) => {
     switch (action.type) {
         case actionTypes.AUTH_START: return authStart(state, action);
@@ -75,7 +88,8 @@ const reducer = (state=initialState, action) => {
         case actionTypes.AUTH_CLEARERROR: return authClearError(state, action);
         case actionTypes.GET_RCMD: return getRcmd(state, action);
         case actionTypes.UP_FAV: return upFav(state, action);
-        case actionTypes.All_CUR: return upAllCur(state, action)
+        case actionTypes.All_CUR: return upAllCur(state, action);
+        case actionTypes.STORE_PROFILE: return storeProfile(state,action);
         default:
             return state;
     }

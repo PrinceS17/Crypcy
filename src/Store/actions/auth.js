@@ -1,10 +1,11 @@
 import axios from 'axios'
 import * as actionTypes from './actionTypes';
 
-export const getAcur = (acur) =>{
+export const getAcur = (acur, resData) =>{
     return {
         type: actionTypes.All_CUR,
         acur: acur,
+        resData: resData,
     }
 }
 export const onMount = () => {
@@ -23,7 +24,8 @@ export const onMount = () => {
                     }
                 })
                 localStorage.setItem('acur',JSON.stringify(acur));
-                dispatch(getAcur(acur));
+                localStorage.setItem('CurrencyData', JSON.stringify(resData));
+                dispatch(getAcur(acur,resData));
             }
         })
     }
@@ -57,6 +59,8 @@ export const logout = () => {
     localStorage.removeItem('rcmd');
     localStorage.removeItem('fav');
     localStorage.removeItem('acur');
+    localStorage.removeItem('UserProfile');
+    localStorage.removeItem('CurrencyData');
     return {
         type: actionTypes.AUTH_LOGOUT,
         loguser: null
@@ -147,6 +151,7 @@ export const authLogin = (username, password) => {
             dispatch(checkAuthTimeout(3600));
             dispatch(getRcmd(username));
             dispatch(getFav(username));
+            dispatch(getProfile(username));
         })
         .catch(err => {
             dispatch(authFail(err))
@@ -177,6 +182,7 @@ export const authSignup = (username, gender, email, password1, password2, intere
             dispatch(checkAuthTimeout(3600));
             dispatch(getRcmd(username));
             dispatch(getFav(username));
+            dispatch(getProfile(username));
         })
         .catch(err => {
             dispatch(authFail(err))
@@ -191,6 +197,9 @@ export const authCheckState = () => {
         const rcmds = JSON.parse(localStorage.getItem('rcmd'));
         const acurr = JSON.parse(localStorage.getItem('acur'));
         const favv = JSON.parse(localStorage.getItem('fav'));
+        const resData = JSON.parse(localStorage.getItem('CurrencyData'));
+        const userProfile = JSON.parse(localStorage.getItem('UserProfile'));
+
         if (token === undefined) {
             dispatch(logout());
         } else {
@@ -201,27 +210,43 @@ export const authCheckState = () => {
                 dispatch(setRcmd(rcmds));
                 dispatch(setFav(favv));
 
-                dispatch(getAcur(acurr));
+                dispatch(getAcur(acurr,resData));
                 dispatch(authSuccess(token, loguser));
                 dispatch(checkAuthTimeout( (expirationDate.getTime() - new Date().getTime()) / 1000) );
-                
+                dispatch(storeProfile(userProfile));
             }
         }
     }
 }
 
-
+export const storeProfile = (profile)=>{
+    return {
+        type: actionTypes.STORE_PROFILE,
+        profile: profile,
+    }
+}
+export const getProfile = (username)=>{
+    return dispatch =>{
+        axios.get(`http://34.216.221.19:8000/profile/${username}`)
+        .then((res)=>{
+          localStorage.setItem('UserProfile', JSON.stringify(res.data))
+          dispatch(storeProfile(res.data));
+        });
+        
+    }
+}
 
 export const updateProfile = (username, updates) =>{
     return dispatch =>{
         const url = `http://34.216.221.19:8000/profile/${username}/`;//
         axios.patch(url, updates)
         .then(res=>{
+            dispatch(getRcmd(username));
+            dispatch(getProfile(username));
             if(updates.hasOwnProperty('favorite')){
                 localStorage.setItem('fav',JSON.stringify(updates['favorite']));
                 dispatch(setFav(updates['favorite']));///URL?? favorite??
                 dispatch(getFav(username));
-                dispatch(getRcmd(username));
             }
         }).catch(err=>{
             console.log(err);

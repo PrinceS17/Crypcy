@@ -33,7 +33,7 @@ class SearchExampleCategory extends Component {
         this.props.source,
         (memo, data, name) => {
           const results = _.filter(data.results, isMatch)
-          if (results.length) memo[name] = { name, results } // eslint-disable-line no-param-reassign
+          if (results.length) memo[name] = { name, results } 
 
           return memo
         },
@@ -64,14 +64,6 @@ class SearchExampleCategory extends Component {
             {...this.props}
           />
         </Grid.Column>
-        {/* <Grid.Column width={8}>
-          <Segment>
-            <Header>State</Header>
-            <pre style={{ overflowX: 'auto' }}>{JSON.stringify(this.state, null, 2)}</pre>
-            <Header>Options</Header>
-            <pre style={{ overflowX: 'auto' }}>{JSON.stringify(this.props.source, null, 2)}</pre>
-          </Segment>
-        </Grid.Column> */}
       </Grid>
     )
   }
