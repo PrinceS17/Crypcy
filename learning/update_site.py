@@ -42,7 +42,7 @@ def update_all(time=None):
     d1 = get_data_from_cache()
 
     print('Updating database ...')
-    option = 2
+    option = 1
     if option == 1:      # 1. manually insert all history
         insert_all_history()
         for r in d1:

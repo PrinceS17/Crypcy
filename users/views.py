@@ -66,7 +66,7 @@ def currency_advice(request):
     num = int(request.GET.get('num', ''))
     typ = request.GET.get('type', '')
 
-    if username == '': 
+    if not username: 
         print('No username!')
         return HttpResponse('No username!')
 
@@ -74,7 +74,9 @@ def currency_advice(request):
     with connection.cursor() as cursor:
         cursor.execute("SELECT interest_tag AS type FROM users_customuser WHERE username = %s", [username])
         res = dictfetchall(cursor)
-    tp = res[0]['type'] if typ == '' else typ
+    if typ == '':
+        tp = res[0]['type']
+    else: tp = typ
 
     if tp == 'low' or tp == 'Low': ttag = 0
     elif tp == 'high' or tp == 'High': ttag = 2
@@ -97,7 +99,7 @@ def currency_advice(request):
     
     for id in prices:
         v_min = min(prices[id])
-        v_max = max(prices[id])
+        v_max = max(max(prices[id]), v_min + 1)
         norm_price = [ (a - v_min) / (v_max - v_min) for a in prices[id] ]
         variance[id] = numpy.var(norm_price)
     variance = sort_dict(variance, False)           # ASC
@@ -159,6 +161,7 @@ def currency_advice(request):
         if len(res) >= num: break
     res_json = json.dumps(res)
     return HttpResponse(res_json)
+
 
 def sort_dict(d, is_reverse):
     sorted_x = sorted(d.items(), key=operator.itemgetter(1), reverse=is_reverse)    # sorted by var value

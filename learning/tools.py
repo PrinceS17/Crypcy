@@ -114,9 +114,11 @@ def get_data_from_cache(time=None):
 # only load history to cache but not the database   (200 is currently hardcoded)
 def load_history_to_cache(id, sym):
     # get history of symbol from crypto compare API
+    if sym == 'MIOTA': symb = 'IOTA'
+    else: symb = sym
     api_key = '9e60336ab74b49376ab8d19a2897ad5a23b9235edb1751ebd60cfdec3769f203'
-    url = 'https://min-api.cryptocompare.com/data/histoday?fsym=%s&tsym=USD&limit=200&api_key=%s' % (sym, api_key)
-
+    url = 'https://min-api.cryptocompare.com/data/histoday?fsym=%s&tsym=USD&limit=200&api_key=%s' % (symb, api_key)
+    
     session = Session()
     try:
         response = session.get(url)
