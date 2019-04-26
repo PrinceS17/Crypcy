@@ -1,7 +1,7 @@
 from rest_auth.registration.serializers import RegisterSerializer
 from rest_auth.registration.views import RegisterView
 from rest_framework import permissions, serializers, generics
-from rest_framework.generics import RetrieveUpdateAPIView
+from rest_framework.generics import RetrieveUpdateDestroyAPIView
 from . import models
 from .serializers import *
 
@@ -32,7 +32,7 @@ class CustomDetailView(RetrieveUpdateAPIView):
     serializer_class = UserSerializer
     permission_classes = (permissions.IsAuthenticated, )
 
-class CustomProfileView(RetrieveUpdateAPIView):
+class CustomProfileView(RetrieveUpdateDestroyAPIView):
     queryset = models.CustomUser.objects.all()
     serializer_class = UserSerializer
     permission_classes = (permissions.AllowAny, )

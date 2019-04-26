@@ -29,6 +29,7 @@ def update_all(time=None):
         id = r['id']
         sym = r['symbol']
         load_history_to_cache(id, sym)      # 2. history cache updated
+        print(' - history of coin', sym, 'loaded to cache...')
     
     try:
         jvm.start(system_cp=True, packages=True, max_heap_size='512m')   
@@ -41,21 +42,33 @@ def update_all(time=None):
     d1 = get_data_from_cache()
 
     print('Updating database ...')
-    for r in d1:
-        id = r['id']
-        sym = r['symbol']
-        if id in blacklist: continue
-        time = timezone.now().timestamp() if time is None else time
-        tid = generate_timeslot(time)
-        mid = (tid % 1e6) * (id % 1e6)
-        supply = r['circulating_supply']
-        price = r['quote']['USD']['price']
-        volume = r['quote']['USD']['volume_24h']
-        privacy = 7.0
-        with connection.cursor() as cursor:      # 4. database attributes other than utility updated
-            cursor.execute("INSERT OR REPLACE INTO maker_metric (id, volume, privacy, price, supply, utility, crypto_currency_id, timeslot_id) \
-                VALUES(%s,%s,%s,%s,%s,%s,%s,%s)", [mid, volume, privacy, price, supply, 0.01, id, tid] )
-        update_utility(id, sym, price)      # 5. utility updated
+    option = 2
+    if option == 1:      # 1. manually insert all history
+        insert_all_history()
+        for r in d1:
+            id = r['id']
+            sym = r['symbol']
+            if id in blacklist: continue
+            price = r['quote']['USD']['price']
+            update_utility(id, sym, price)
+            print(' - utility of coin', sym, 'updated...')
+
+    elif option == 2:    # 2. automatically update 1 at a time
+        for r in d1:
+            id = r['id']
+            sym = r['symbol']
+            if id in blacklist: continue
+            time = timezone.now().timestamp() if time is None else time
+            tid = generate_timeslot(time)
+            mid = (tid % 1e6) * (id % 1e6)
+            supply = r['circulating_supply']
+            price = r['quote']['USD']['price']
+            volume = r['quote']['USD']['volume_24h']
+            privacy = 7.0
+            with connection.cursor() as cursor:      # 4. database attributes other than utility updated
+                cursor.execute("INSERT OR REPLACE INTO maker_metric (id, volume, privacy, price, supply, utility, crypto_currency_id, timeslot_id) \
+                    VALUES(%s,%s,%s,%s,%s,%s,%s,%s)", [mid, volume, privacy, price, supply, 0.01, id, tid] )
+            update_utility(id, sym, price)      # 5. utility updated
 
 ii = 0
 def periodical_update(interval):

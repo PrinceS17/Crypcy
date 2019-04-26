@@ -38,7 +38,7 @@ def train(option, sym, num):
 
     # evaluation.evaluate_train_test_split(cls, dataset, 90, Random(1))   # evaluate by splitting train/test set
     evl = evaluation.test_model(cls, dataset)       # evaluate on test set
-    print('predictions: ')
+    print('predictions (' + str(len(evl)) + '): ')
     for i in range(num):
         print(evl[i - num], end=' ')
     # print(evaluation.summary())

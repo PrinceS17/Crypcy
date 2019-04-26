@@ -78,12 +78,12 @@ def get_efficient_currency(price):
 def get_best_coin_by_name(name):
     query = '''SELECT DISTINCT c.id, c.name, m.timeslot_id, m.price, m.utility  
     FROM maker_cryptocurrency c JOIN maker_metric m ON c.id = m.crypto_currency_id
-    WHERE name LIKE '%%%s%%' AND m.timeslot_id = 
+    WHERE (name LIKE '%%%s%%' OR c.symbol LIKE '%%%s%%') AND m.timeslot_id = 
     (   
         SELECT DISTINCT timeslot_id 
         FROM maker_metric ORDER BY timeslot_id DESC LIMIT 1
     )
-    ORDER BY utility DESC''' % (name)
+    ORDER BY utility DESC''' % (name, name)
 
     with connection.cursor() as cursor:
         cursor.execute(query)

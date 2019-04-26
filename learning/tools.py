@@ -130,6 +130,73 @@ def load_history_to_cache(id, sym):
         print(e)
         return 0
 
+'''
+    Update historical data and write to Cache for given coin. 
+    From crypto compare here. --Song
+'''
+def load_history_from_cache(id, sym, supply):
+    # read data from cache
+    path = os.path.join('..', 'History', 'history_%s.txt' % sym)
+    cache = open(path, 'r')
+    data = json.loads(cache.read())
+
+    # update them into sqlite database: (attribute in doubt: privacy?)
+    data = data['Data']
+    for r in data:
+        tid = generate_timeslot(r['time'])
+        mid = (tid % 1e6) * (id % 1e6)
+        volume_24h = r['volumeto']      # volume in USD
+        if volume_24h == 0: continue
+        price = r['open']
+        privacy = 8.0
+        # utility = value_maker(volume_24h, supply, privacy, price)
+
+        with connection.cursor() as cursor:
+            cursor.execute("INSERT OR REPLACE INTO maker_metric (id, volume, privacy, price, supply, utility, crypto_currency_id, timeslot_id) \
+                        VALUES(%s,%s,%s,%s,%s,%s,%s,%s)", [mid, volume_24h, privacy, price, supply, 0.1, id, tid] )
+    cache.close()
+
+'''
+    Insert the history data of all currencies using load_history.
+'''
+def insert_all_history(sym='BTC'):
+    d1 = get_data_from_cache()
+    start = False
+    for r in d1:
+        if r['symbol'] == sym: start = True
+        if not start: continue
+        try:
+            load_history_from_cache(r['id'], r['symbol'], r['circulating_supply'])
+            print(' - coin', r['id'], ':', r['symbol'], 'inserted')
+        except: 
+            print(' - coin', r['id'], ':', r['symbol'], 'ignored')
+    complete_time()
+
+'''
+    Check and update all the times and newsId in timeslot table.
+    Ensure the data integrity in timeslot.
+'''
+def complete_time():
+    with connection.cursor() as cursor:
+        cursor.execute(''' SELECT timeslot_id AS id FROM maker_metric
+            INTERSECT SELECT id FROM maker_timeslot''')
+        res1 = dictfetchall(cursor)
+        cursor.execute('SELECT COUNT(*) AS cnt FROM maker_relatednews')
+        res2 = dictfetchall(cursor)
+    
+    if len(res1) == 0: return
+    num = res2[0]['cnt']
+    print('Incomplete timeslot: ', res1)
+    print('# News: ', num)
+
+    for i in range(len(res1)):
+        tid = res1[i]['id']
+        time = tid * 3600
+        nid = random.randint(1, num)
+        with connection.cursor() as cursor:
+            cursor.execute('INSERT OR REPLACE INTO maker_timeslot (id, time, related_news_id) \
+            VALUES(%s, %s, %s)', [tid, time, nid])
+
 def update_utility(id, sym, price):
     path = os.path.join('Predict', 'pred_%s.txt' % sym)
     try:
