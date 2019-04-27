@@ -80,8 +80,23 @@ def periodical_update(interval):
     ii += 1
     Timer(interval, periodical_update, [interval]).start()
 
+# patch for volume
+def correct_volume():
+    print('Correcting wierd volume...')
+    fix_list = [1, 2, 52, 131, 328, 512, 825, 1027, 1720, 1765, 1831, 1839, 1958, 2010, 2011, 3602]
+    d = get_data_from_cache()
+    for r in d:
+        id = r['id']
+        if id not in fix_list: continue
+        sym = r['symbol']
+        supply = r['circulating_supply']
+        with connection.cursor() as cursor:
+            cursor.execute("DELETE FROM maker_metric WHERE crypto_currency_id = %s AND privacy = 7.0", [id])
+        load_history_from_cache(id, sym, supply)
+
 def main():
     periodical_update(3600 * 24)
 
 if __name__ == "__main__":
     main()
+    # correct_volume()
