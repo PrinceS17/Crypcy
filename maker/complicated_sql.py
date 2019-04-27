@@ -40,10 +40,10 @@ def get_burst_currency(t1, t21, t22, price1, price2):
     arguments: price (budget)
 '''
 def get_efficient_currency(price):
-    query2 = '''SELECT *
+    query2 = '''SELECT id, name, utility
     FROM maker_cryptocurrency NATURAL JOIN
     (
-        SELECT DISTINCT m.crypto_currency_id AS id, m.utility 
+        SELECT DISTINCT m.crypto_currency_id AS id, m.utility, m.timeslot_id 
         FROM maker_metric m
         WHERE price < %s AND (
             SELECT AVG(m1.utility)
@@ -62,7 +62,8 @@ def get_efficient_currency(price):
                 GROUP BY crypto_currency_id
             )
         )
-    )''' % (price, price)
+        ORDER BY timeslot_id DESC LIMIT 1
+    ) ''' % (price, price)
 
     with connection.cursor() as cursor:
         cursor.execute(query2)
@@ -70,8 +71,41 @@ def get_efficient_currency(price):
     
     return res
 
+'''
+    Interesting select 1: choose the coin of highest utility currently 
+    among those that contains a given name, say, "coin".    -- Song
+'''
+def get_best_coin_by_name(name):
+    query = '''SELECT DISTINCT c.id, c.name, m.timeslot_id, m.price, m.utility  
+    FROM maker_cryptocurrency c JOIN maker_metric m ON c.id = m.crypto_currency_id
+    WHERE (name LIKE '%%%s%%' OR c.symbol LIKE '%%%s%%') AND m.timeslot_id = 
+    (   
+        SELECT DISTINCT timeslot_id 
+        FROM maker_metric ORDER BY timeslot_id DESC LIMIT 1
+    )
+    ORDER BY utility DESC''' % (name, name)
 
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        res = dictfetchall(cursor)
 
+    return res
 
+'''
+    Interesting select 2: select the related news that contains the given
+    word or sentence and list the timeslots when it appears.
+    Currently also shows repeated contents at first, and allow time to be 
+    null.   -- Song
+'''
+def get_news_by_word(word):
+    query = '''SELECT r.content, t.id, t.time
+    FROM maker_relatednews r LEFT OUTER JOIN maker_timeslot t ON t.related_news_id = r.id
+    WHERE r.content LIKE '%%%s%%' ORDER BY t.id DESC''' % (word)
+    
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        res = dictfetchall(cursor)
 
+    return res
 
+# End. -- Song

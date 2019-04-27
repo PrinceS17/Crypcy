@@ -8,8 +8,8 @@ Relational Schema: <all IDs and [ , ] are primary keys>
 Crypto-Currency (CurrencyID, Name, Logo)
 Metric ([Crypto-Currency.CurrencyID, Timeslot.SlotID], Volume, Privacy, Price, Circulating Supply, Utility (Value))
 Timeslot (SlotID, Related News. FactID)
-User (UserID, Name, Gender, Password, Interest Tag, Score of Knowledge)
-Log (LogID, IP, Time, User.UserID, Related News.FactID)
+User (UserID, Name, Gender, Password, Interest Tag, Score of Knowledge)     move to custom user model
+Log (LogID, IP, Time, User.UserID, Related News.FactID)                     no use later
 Related News (FactID, Tag, Type, Picture, Content, Author, Slot.SlotID)
 Favorite (Crypto-Currency. CurrencyID, User. UserID)
 
@@ -34,7 +34,9 @@ class Timeslot(models.Model):
 
 class CryptoCurrency(models.Model):
     name = models.CharField(max_length=200)
+    symbol = models.CharField(max_length=20, null=True)    # BTC
     logo = models.URLField()        # in doubt
+    description = models.TextField('About', null=True)
     time = models.ManyToManyField(Timeslot, 
         through='Metric', 
         through_fields=('crypto_currency', 'timeslot') )
