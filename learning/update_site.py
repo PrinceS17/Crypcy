@@ -20,7 +20,7 @@ blacklist = [2955, 3144, 2335, 2471]
 # get the latest data from coin market cap, insert into database, & write into history cache
 def update_all(time=None):
     global blacklist
-
+    '''
     print('Loading latest data ... ')
     d1 = load_data(time)    # 1. load data from coin market cap for insertion, cache.txt updated
 
@@ -38,7 +38,8 @@ def update_all(time=None):
         print(traceback.format_exc())
     finally:
         jvm.stop()
-
+    '''
+    
     d1 = get_data_from_cache()
 
     print('Updating database ...')
