@@ -1,0 +1,16 @@
+
+
+.Content{
+    &-Header{
+        text-align: center;
+        font-size: 24px;
+        margin: 18px;
+    }
+}
+
+.SearchBar{
+    position: absolute;
+    left: 300px;
+    // transform: translateX(-50%);
+    top: 0;
+}

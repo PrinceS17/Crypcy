@@ -1,0 +1,10 @@
+.adv-container{
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%);
+}
+
+.tbb{
+    left: 50%;
+    position: relative;
+}
