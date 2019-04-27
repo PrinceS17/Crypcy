@@ -1,4 +1,4 @@
-import { Table, Button } from 'antd';
+import { Table, Button, Spin } from 'antd';
 import React from 'react';
 import {withRouter} from 'react-router-dom';
 
@@ -73,7 +73,11 @@ class MainTable extends React.Component {
     }];
 
 
-
+    if(!this.props.data){
+      return (
+        <Spin tip="Fetching Data..."></Spin>
+      );
+    }
     return (
       <div>
         <div className="table-operations">

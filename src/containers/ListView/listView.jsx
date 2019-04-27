@@ -74,14 +74,14 @@ class ListView extends Component{
         let errorMessage = this.state.errorState===1? "Input Unvalid":"";
         if(this.state.errorState===2)  errorMessage="Insert Successful";
         return(
-            <div style={{position: "relative"}}>
+            <div style={{position: "relative", textAlign:'center'}}>
+                <h1>Top Cryptocurrency List</h1>
                 <div  className = "CardContainer">
                     <Card
                     className="Card"
-                    title="Top Cryptocurrencies List"
                     bordered={false}
                     >
-
+                    <h3>Cryptocurrency Filter</h3>
                     <Form onSubmit={this.handleSubmit} className="Form">
                         <Form.Group>
                         <Form.Input placeholder='Price From' name='priceLow' onChange={this.handleChange} style={{ margin: "0px 40px 0x 40px"}} />

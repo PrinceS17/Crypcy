@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Button } from 'semantic-ui-react'
 import { Link, withRouter } from 'react-router-dom'
-import {Layout, Menu, Dropdown, Breadcrumb, Icon, Table, Divider, Tag} from 'antd';
+import {Layout, Menu, notification, Icon, Table, Divider, Tag} from 'antd';
 // import Article from "../../components/Article/Article"
 import CrypcyLogo from "../../Assets/Images/CrypcyLogo.png"
 import style from "./GeneralLayout.scss"
@@ -68,9 +68,16 @@ class GeneralLayout extends Component{
     // clearInterval(this.state.intervalId1);
   }
 
+  openNotificationWithIcon = (type, message) => {
+    notification[type]({
+      message: message,
+      description: 'You will be redirected soon.',
+    });
+  };
 
   handleLogout = (e) => {
     this.props.logout();
+
     this.props.history.push(this.props.location.pathname);
   }
   handleLogin = (e) => {
@@ -132,7 +139,12 @@ class GeneralLayout extends Component{
             style={{ position: 'fixed', width:'300px' }}
             mode="inline"
           >
-            <Menu.Item key="logout" onClick={this.handleLogout} style={{color:'red'}}><Icon type="logout" />Log out</Menu.Item>
+            <Menu.Item key="logout" onClick={()=>{
+              this.handleLogout();
+              this.openNotificationWithIcon('success', 'Logged out');
+            }
+            
+            } style={{color:'red'}}><Icon type="logout" />Log out</Menu.Item>
             <Menu.Item key="list"><Link to='/list'><Icon type="dollar" theme="twoTone"/> Cryptocurrency List</Link></Menu.Item>
             <Menu.Item key="profile"><Link to={`/profile/${this.props.loguser}`}><Icon type="smile" theme="twoTone" twoToneColor="#00bb00"/> Profile</Link></Menu.Item>
 
@@ -160,7 +172,7 @@ class GeneralLayout extends Component{
           defaultSelectedKeys={['1']}
           style={{ position: 'fixed', width:'300px' }}
         >
-          <Menu.Item key="login"  onClick={this.handleLogin} style={{color:'blue'}}> <Icon type="login" />Log in</Menu.Item>
+          <Menu.Item key="login"  onClick={this.handleLogin} style={{color:'blue'}}> <Icon type="login" />Log in / Sign up</Menu.Item>
           <Menu.Item key="list"><Link to='/list'><Icon type="dollar" theme="twoTone"/> Cryptocurrency List</Link></Menu.Item>
         </Menu>
       </Sider>
@@ -174,8 +186,6 @@ class GeneralLayout extends Component{
 
 
             <Header className="header" style={{ position: 'fixed', zIndex: 1, width: '100%' }}>
-            
-            
 
               <Link to="/">
               <img src = {CrypcyLogo} style={{height: '64px', top: '-4px', position:'relative'}}/>

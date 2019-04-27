@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form, Icon, Input, Button, Spin, Alert } from 'antd';
 import { connect } from 'react-redux';
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import * as actions from '../store/actions/auth';
 import ErrorCard from '../utilities/ErrorCard'
 
@@ -52,7 +52,7 @@ componentDidMount(){
 
             {
                 this.props.loguser?
-                <Alert  key='1' message={<div>{`Welcome! ${this.props.loguser}`} <br /><a href="/list/">Back to List</a></div>} type="success"  showIcon/>
+                <Alert  key='1' message={<div>{`You are logged in! ${this.props.loguser}`} <br /><Link to="/list/">Back to List view</Link></div>} type="success"  showIcon/>
                 :
                 <div>
                     {errorMessage}
@@ -87,10 +87,10 @@ componentDidMount(){
                                 Login
                             </Button>
                             Or 
-                            <NavLink 
+                            <Link 
                                 style={{marginRight: '10px'}} 
                                 to='/signup/'> signup
-                            </NavLink>
+                            </Link>
                             </FormItem>
                         </Form>
                     }

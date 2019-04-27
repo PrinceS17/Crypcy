@@ -52,8 +52,6 @@ const authLogout = (state, action) => {
         fav: null,
         rcmd: null,
         fav: null,
-        allCurrency: null,
-        CurrencyList: null,
     });
 }
 

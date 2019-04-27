@@ -136,7 +136,7 @@ class RegistrationForm extends React.Component {
                     )}
                     </FormItem>
 
-                    <Form.Item label="Interest tag">
+                    <Form.Item label="Invest Interest (Risk Preference)">
                     {getFieldDecorator('interest')(
                         <Radio.Group>
                             <Radio.Button value="Low">Low</Radio.Button>

@@ -1,0 +1,80 @@
+
+body, html {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    
+}
+
+.Home{
+    
+    text-align: center;
+    /* 
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%); */
+    /* background-color: black; */
+
+}
+
+.Home-logo{
+        width: 200px;
+
+}
+
+.Carsl{
+    position: relative;
+    margin: 0 auto;
+    
+}
+.Home-header{
+    position: absolute;
+    z-index:1;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+.Info-text{
+    &-h1{
+        color: white;
+        text-shadow: 5px 5px 10px black, 0 0 25px #aaa, 0 0 10px #aaa;
+        font-family:Arial Black;
+        font-size: 34pt;  
+    }
+    &-h3{
+        color: white;
+        text-shadow: 5px 5px 10px black, 0 0 25px #aaa, 0 0 10px #aaa;
+        font-family:Arial Black;
+        font-size: 18pt; 
+    }
+
+
+}
+
+.ant-carousel .slick-slide {
+    text-align: center;
+    overflow: hidden;
+  }
+  
+  h3 {
+    color: #000;
+  }
+
+  .Carsl-Img {
+    opacity: 0.5;
+    top: 50px;
+}
+
+.Modal-Img{
+    height: 170px;
+}
+
+.WTD{
+    margin: 20px;
+    font-family:Arial Black;
+}
+
+.Icons{
+    margin: 10px;
+
+}

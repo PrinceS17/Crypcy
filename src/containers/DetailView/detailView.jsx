@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import axios from "axios";
-import { Card, Icon, Avatar, Button, Form, Radio, Col, Row, notification } from 'antd';
-import {Link, NavLink, withRouter} from 'react-router-dom'
+import {Spin, Card, Icon, Menu, Button, Form, Radio, Col, Row, notification, Dropdown } from 'antd';
+import {withRouter} from 'react-router-dom'
 import styles from './detailView.css'
 import Areanull from "../../components/Charts/Areanull.jsx"
 import { string } from 'prop-types';
@@ -118,7 +118,21 @@ class DetailView extends Component{
 
     
     render(){
-
+        const preMenu =  (
+            <Menu>
+              <Menu.Item>
+                Learning-based prediction for next 5 days' price.
+              </Menu.Item>
+            </Menu>
+          );
+          const utilMenu =  (
+            <Menu>
+              <Menu.Item>
+                Utility modeled by price, volume, future response rate, privacy, etc.
+              </Menu.Item>
+            </Menu>
+          );
+        
         let details = (
         this.state.metrics? 
             <div className="Details"> 
@@ -127,19 +141,24 @@ class DetailView extends Component{
                 <div style={{ padding: '30px' }}>
                 <Row gutter={16} type="flex" style={{textAlign:'center'}} justify="center">
                 <Col span={8}>
-                    <Card title="Price" bordered={false} ><h3>{this.state.metrics[0].price}</h3></Card>
+                    <Card title="Price ($)" bordered={false} ><h3>{this.state.metrics[0].price}</h3></Card>
                 </Col>
                 <Col span={8}>
-                    <Card title="Volume" bordered={false}><h3>{this.state.metrics[0].volume}</h3></Card>
+                    <Card title="Volume ($)" bordered={false}><h3>{this.state.metrics[0].volume}</h3></Card>
                 </Col>
                 </Row>
+                <br />
                 <Row gutter={16} type="flex" style={{textAlign:'center'}} justify="center">
-                <Col span={8}>
-                    <Card title="Utility" bordered={false}><h3>{this.state.metrics[0].utility}</h3></Card>
-                </Col>
                 <Col span={8}>
                     <Card title="Privacy" bordered={false}><h3>{this.state.metrics[0].privacy}</h3></Card>
                 </Col>
+                <Col span={8}>
+                    <Card title={<span>Utility <Dropdown overlay={utilMenu}>
+                    <a className="ant-dropdown-link" href="#">   <Icon type="question" />
+                    </a>
+                </Dropdown></span>} bordered={false}><h3>{this.state.metrics[0].utility}</h3></Card>
+                </Col>
+
                 </Row>
 
 
@@ -162,6 +181,8 @@ class DetailView extends Component{
         }
 
         let butArea = "";
+
+          
         if(this.props.loguser){
             butArea = (
                 favFlag?
@@ -173,7 +194,7 @@ class DetailView extends Component{
                         retObj['favorite'] = oldFavs;
                         this.props.updateFavs(this.props.loguser, retObj);
                         notification['success']({
-                            message: 'Unfavorite Success',
+                            message: 'Unfavorite Successful',
                             description: 'The recommendation list will be updated soon on the side bar.',
                           });
                           
@@ -186,12 +207,18 @@ class DetailView extends Component{
                         retObj['favorite'] = oldFavs;
                         this.props.updateFavs(this.props.loguser, retObj);
                         notification['success']({
-                            message: 'Favorite Success',
+                            message: 'Favorite Successful',
                             description: 'The recommendation list will be updated soon on the side bar.',
                           });
                     }} type="primary">Favorite</Button>
             );
         }
+        if(!this.state.metrics){
+            return (
+              <Spin style={{position:'absolute', left: '50%', top: '50%'}} tip="Loading..." sty></Spin>
+            );
+          }
+
         return (
             <div>
                 {butArea}
@@ -210,7 +237,13 @@ class DetailView extends Component{
                     
                 </div>
                 <div className="Graphs  container"  style={{position:'relative', top: '100px'}}>
-                <p style={{fontSize: '24px'}}>Performance Graphs</p>
+                <span style={{fontSize: '24px'}}>Performance And Prediction  
+                </span>
+                    <span> <Dropdown overlay={preMenu}>
+                    <a className="ant-dropdown-link" href="#">  What's this <Icon type="question" />
+                    </a>
+                </Dropdown></span>
+                <div> <br /></div>
                 <Form className="Form1" style={{position:"absolute", left:"50%"}}>
                 <Form.Item
                     >

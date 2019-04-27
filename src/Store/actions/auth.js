@@ -60,7 +60,6 @@ export const logout = () => {
     localStorage.removeItem('fav');
     localStorage.removeItem('acur');
     localStorage.removeItem('UserProfile');
-    localStorage.removeItem('CurrencyData');
     return {
         type: actionTypes.AUTH_LOGOUT,
         loguser: null
