@@ -90,13 +90,15 @@ def correct_volume():
         if id not in fix_list: continue
         sym = r['symbol']
         supply = r['circulating_supply']
-        with connection.cursor() as cursor:
-            cursor.execute("DELETE FROM maker_metric WHERE crypto_currency_id = %s AND privacy = 7.0", [id])
-        load_history_from_cache(id, sym, supply)
+        price = r['quote']['USD']['price']
+        # with connection.cursor() as cursor:
+        #     cursor.execute("DELETE FROM maker_metric WHERE crypto_currency_id = %s AND privacy = 7.0", [id])
+        # load_history_from_cache(id, sym, supply)
+        update_utility(id, sym, price)
 
 def main():
     periodical_update(3600 * 24)
 
 if __name__ == "__main__":
-    main()
-    # correct_volume()
+    # main()
+    correct_volume()
