@@ -25,4 +25,5 @@ Though there is actually no 100% accurate prediction in the world, we try to giv
 
 ## Related Links
 Homepage: http://crypcy.s3-website.us-west-2.amazonaws.com/
+
 Demo Video: https://youtu.be/tKva8R8gFb8
