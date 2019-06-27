@@ -36,7 +36,7 @@ $ pip install -r requirements.txt
 $ python manage.py runserver
 ```
 
-Then visit http://127.0.0.1::8000/ to enjoy Crypcy!
+Then visit http://127.0.0.1:8000/ to enjoy Crypcy!
 
 ## Related Links
 Homepage: http://crypcy.s3-website.us-west-2.amazonaws.com/ (under maintainance to improve the backend)
