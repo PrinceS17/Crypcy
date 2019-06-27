@@ -29,6 +29,14 @@ __2. Customized Investment Advice__
 While user can add his or her favorite coin into the watchlist, our website will give customized advice for each user according to their preference on risk and their favorites. We evaluate the risk mainly based on the variance of the historical price and each coin has a tag of "high/moderate/low" risk. Then risk along with other attributes such as volume, utility are considered to give 5 recommendations to each user.  
 
 ## How to Build
+To test the this project in your local host, you can first clone it to your local folder. We recommend use python virtual environment for the following operations. Input the following commands under your directory for the project: 
+
+```
+$ pip install -r requirements.txt
+$ python manage.py runserver
+```
+
+Then visit http://127.0.0.1::8000/ to enjoy Crypcy!
 
 ## Related Links
 Homepage: http://crypcy.s3-website.us-west-2.amazonaws.com/ (under maintainance to improve the backend)
