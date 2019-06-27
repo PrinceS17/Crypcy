@@ -19,7 +19,12 @@ Crypcy is a crypto-currency analysis website where people can watch popular cryp
 __1. Predict Future Value__
 Though there is actually no 100% accurate prediction in the world, we try to give our user an impression of how the price will behave based on its recent trend. Future price in the next 5 days will be shown in green right after the current price which is in blue in the same price figure on the website. The utility, i.e. estimation of the trend in the recent future, is defined as follows:
 
+Utility = avg(predicted price in 5 days) / price of last day * 100
 
+Therefore, a higher utility to some extent indicates a higher possibility of price increase in the recent future. 
+
+__2. Customized Investment Advice__
+While user can add his or her favorite coin into the watchlist, our website will give customized advice for each user according to their preference on risk and their favorites. We evaluate the risk mainly based on the variance of the historical price and each coin has a tag of "high/moderate/low" risk. Then risk along with other attributes such as volume, utility are considered to give 5 recommendations to each user.  
 
 ## How to Build
 
