@@ -123,14 +123,18 @@ def load_history_to_cache(id, sym):
     try:
         response = session.get(url)
         data = json.loads(response.text)
-        path = os.path.join('..', 'History', 'history_%s.txt' % sym)
-        cache = open(path, 'w')
-        cache.write(response.text)
-        cache.close()
-        return data['Data']
+    except KeyboardInterrupt:
+        raise
     except (ConnectionError, Timeout, TooManyRedirects) as e:
         print(e)
         return 0
+
+    path = os.path.join('..', 'History', 'history_%s.txt' % sym)
+    cache = open(path, 'w')
+    cache.write(response.text)
+    cache.close()
+    return data['Data']
+    
 
 '''
     Update historical data and write to Cache for given coin. 
@@ -170,6 +174,8 @@ def insert_all_history(sym='BTC'):
         try:
             load_history_from_cache(r['id'], r['symbol'], r['circulating_supply'])
             print(' - coin', r['id'], ':', r['symbol'], 'inserted')
+        except KeyboardInterrupt:
+            raise
         except: 
             print(' - coin', r['id'], ':', r['symbol'], 'ignored')
     complete_time()

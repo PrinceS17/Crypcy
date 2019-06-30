@@ -84,7 +84,7 @@ def currency_advice(request):
         ttag = 1
         tp = 'moderate(default)'
 
-    print('\nusername: ', username, ' num: ', num, ' risk type: ', tp, '\n')
+    # print('\nusername: ', username, ' num: ', num, ' risk type: ', tp, '\n')
 
     # fetch (currency_id, price) for variance calculation
     with connection.cursor() as cursor:

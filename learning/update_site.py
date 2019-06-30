@@ -20,7 +20,8 @@ blacklist = [2955, 3144, 2335, 2471]
 # get the latest data from coin market cap, insert into database, & write into history cache
 def update_all(time=None):
     global blacklist
-    '''
+    
+    # ------------- Stage 1, Choice 1: Load data from api and process --------------- # 
     print('Loading latest data ... ')
     d1 = load_data(time)    # 1. load data from coin market cap for insertion, cache.txt updated
 
@@ -34,14 +35,17 @@ def update_all(time=None):
     try:
         jvm.start(system_cp=True, packages=True, max_heap_size='512m')   
         hist_predict.main()     # 3. fire a new training, predict cache updated
+    except KeyboardInterrupt:
+        raise
     except Exception as e:
         print(traceback.format_exc())
     finally:
         jvm.stop()
-    '''
     
-    d1 = get_data_from_cache()
+    # --------------- Stage 1, Choice 2: Get data from cache  ------------------------ #
+    # d1 = get_data_from_cache()
 
+    # --------------- Stage 2: Update database using data obtained ------------------- # 
     print('Updating database ...')
     option = 1
     if option == 1:      # 1. manually insert all history
@@ -74,9 +78,9 @@ def update_all(time=None):
 ii = 0
 def periodical_update(interval):
     update_all()
-    update_news1()
+    # update_news1()        # light debug
     global ii
-    print(ii)
+    print('Update No.', ii)
     ii += 1
     Timer(interval, periodical_update, [interval]).start()
 
@@ -97,8 +101,8 @@ def correct_volume():
         update_utility(id, sym, price)
 
 def main():
-    periodical_update(3600 * 24)
+    periodical_update(3600 * 24)        # unit: s
 
 if __name__ == "__main__":
-    # main()
-    correct_volume()
+    main()
+    # correct_volume()          # need figuring out reason
